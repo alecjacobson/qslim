@@ -1,16 +1,16 @@
 # $Id: gfx-config.in,v 1.9 2002/06/13 18:34:59 garland Exp $
 
-CC = gcc
-CXX = g++
+CC = /opt/local/bin/gcc
+CXX = /opt/local/bin/g++
 RANLIB = ranlib
 RM = /bin/rm
 FLTKCONFIG = fltk-config
 
 WIN_FLAGS = 
 WIN_LFLAGS = 
-CFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Dropbox/qslim-2.1/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
-CXXFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Dropbox/qslim-2.1/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
-LDFLAGS = -L/opt/local/lib -L/Users/ajx/Dropbox/qslim-2.1/libgfx/src $(WIN_LFLAGS)
+CFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Documents/qslim/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+CXXFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Documents/qslim/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+LDFLAGS = -L/opt/local/lib -L/Users/ajx/Documents/qslim/libgfx/src $(WIN_LFLAGS)
 
 WIN_LIBS  =  -framework Carbon -framework ApplicationServices 
 WIN_DLIBS  =  -framework Carbon -framework ApplicationServices 

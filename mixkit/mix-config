@@ -1,4 +1,4 @@
-MIX_ROOT = /Users/ajx/Dropbox/qslim-2.1/mixkit
+MIX_ROOT = /Users/ajx/Documents/qslim/mixkit
 LIBMIX = -lmix -lgfx
 
 include $(MIX_ROOT)/../libgfx/gfx-config

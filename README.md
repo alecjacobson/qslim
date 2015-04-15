@@ -5,32 +5,73 @@ This is a port of the wonderful
 Michael Garland. I've [patched](http://www.alecjacobson.com/weblog/?p=3244) it
 to compile on mac os x.
 
-> Original README.txt
+## Compilation
+
+You must first install `fltk` (e.g. using macports/homebrew).
+
+```bash
+cd libgfx
+env CPPFLAGS="-I/opt/local/include -fpermissive" LDFLAGS="-L/opt/local/lib" ./configure
+make -C src
+cd ../mixkit
+./configure
+make -C src
+cd ../filters
+make
+cd ../tools/qslim
+make
+```
+
+All of the makefiles depend on those created by the first `configure` call
+inside `libgfx/`.
+
+## Running
+
+Double clicking on the gui version `qvis.app` will not work. The GUI only works
+via the command.
+
+```bash
+./qvis.app/Contents/MacOS/qvis input.smf
+```
+
+The conversion tool `ply2smf` only works on stdin, so you'll have to do
+something like:
+
+```bash
+cat input.ply | ./ply2smf >output.smf
+```
+
+## Extra tools
+
+I've also added two tools: `tools/qslim/qvis_obj.sh` and `tools/qslim/qslim_obj.sh` which simply wrap
+up some conversions so you can use these tools with .obj files.
+
+> Original README.txt...
 
 ------------------------------------------------------------------------
-		    SlimKit Surface Modeling Tools
-			     Version 1.1
-			     July 4, 2004
+##SlimKit Surface Modeling Tools
+Version 1.1
+July 4, 2004
 
-		 Michael Garland <garland@cs.uiuc.edu>
-
-
- Copyright (C) 1998-2002 Michael Garland.  See "COPYING.txt" for details.
+Michael Garland <garland@cs.uiuc.edu>
 
 
- For the latest version and up-to-date information, please visit
- http://www.uiuc.edu/~garland/software/qslim.html
+Copyright (C) 1998-2002 Michael Garland.  See "COPYING.txt" for details.
 
 
- Michael Garland
- Department of Computer Science
- University of Illinois at Urbana-Champaign
- 201 North Goodwin Avenue
- Urbana, IL 61801
+For the latest version and up-to-date information, please visit
+http://www.uiuc.edu/~garland/software/qslim.html
+
+
+Michael Garland
+Department of Computer Science
+University of Illinois at Urbana-Champaign
+201 North Goodwin Avenue
+Urbana, IL 61801
 
 ------------------------------------------------------------------------
 
-## OVERVIEW
+### OVERVIEW
 
 This is the SlimKit collection of surface modeling tools.  Most of the
 programs in this collection simply provide an interface to the
@@ -45,7 +86,7 @@ files.
 New in this release is the QCluster software package in tools/cluster.
 
 
-## BUILDING & INSTALLATION
+### BUILDING & INSTALLATION
 
 To build on a Unix machine:
 
@@ -77,7 +118,7 @@ Finally:
 
 
 
-## FUTURE PLANS
+### FUTURE PLANS
 
 None.  This software package has changed relatively little since its
 initial public release in March 1999.  The only substantial changes were
