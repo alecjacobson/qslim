@@ -1,8 +1,0 @@
-MIX_ROOT = /Users/ajx/Documents/qslim/mixkit
-LIBMIX = -lmix -lgfx
-
-include $(MIX_ROOT)/../libgfx/gfx-config
-
-CFLAGS += -I$(MIX_ROOT)/src
-CXXFLAGS += -I$(MIX_ROOT)/src
-LDFLAGS += -L$(MIX_ROOT)/src
