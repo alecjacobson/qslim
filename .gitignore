@@ -1,3 +1,5 @@
+# use glob syntax.
+syntax: glob
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +28,14 @@
 *.exe
 *.out
 *.app
+
+
+*.so
+*.so.[0123456789]
+*.so.[0123456789].[0123456789]
+*.o
+*.a
+*~
+*.swp
+*.swo
+.DS_Store
