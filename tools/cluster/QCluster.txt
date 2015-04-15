@@ -1,0 +1,54 @@
+------------------------------------------------------------------------
+		    QCluster Hierarchical Face Clustering
+			     Version 1.0
+			     July 4, 2004
+
+		 Michael Garland <garland@uiuc.edu>
+
+
+ Copyright (C) 1998-2002 Michael Garland.  See "COPYING.txt" for details.
+
+
+ For the latest version and up-to-date information, please visit
+ http://www.uiuc.edu/~garland/software/qslim.html
+
+
+ Michael Garland
+ Department of Computer Science
+ University of Illinois at Urbana-Champaign
+ 201 North Goodwin Avenue
+ Urbana, IL 61801
+
+------------------------------------------------------------------------
+
+
+The QCluster program is a new component of the QSlim 2.1 surface
+simplification package.  Rather than simplifying the geometry by iterative
+contraction, it iteratively merges adjacent sets of faces.  This produces a
+binary hierarchy of "face clusters".  The underlying error metric is in
+essence a dual form of the quadric error metric used by QSlim.
+
+
+RUNNING QCLUSTER
+----------------
+
+The standard QCluster executable is a non-interactive program called
+'qcluster' which you invoke using a command of the form:
+
+	qcluster <filename>
+
+When clustering is complete, it will output the resulting hierarchy.
+
+
+The output file consists of a sequence of dual contraction records.  Every
+face cluster is given an integer ID.  Initially, each face of the input model
+is a singleton cluster and is assigned a number from 1..n.  A subsequent
+contraction record will create a new node numbered by the next available
+identifier.  Each contraction record consists of the following items:
+
+    f^ <i> <j>               -- IDs of clusters being merged
+    fo <x> <y> <z>           -- Origin of local frame for this cluster
+    fe <xyz1> <xyz2> <xyz3>  -- Three axes of local frame
+    fn <x> <y> <z>           -- Normal of least-squares best fitting plane
+    fd <d>                   --    offset for least-squares best plane
+    fx <xyz1> <xyz2>         -- Corners of oriented bbox (in LOCAL FRAME)

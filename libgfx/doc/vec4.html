@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: vec4.html,v 1.1 2000/06/13 18:59:13 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Vector Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Vector Math</h2>
+
+<h3>class Vec4</h3>
+
+<p> This class implements a 4-dimensional real-valued vector.
+Individual elements are represent with <code>double</code> precision
+floating point numbers.  To use the <tt>Vec4</tt> class you must
+include the header
+<pre>
+    #include &lt;gfx/vec4.h&gt;
+</pre>
+
+<h4>Constructor Methods</h4>
+
+<p>The <tt>Vec4</tt> class defines the following set of constructors:
+
+<pre>
+    Vec4();                                        <i>// Initializes vector to (0 0 0 0).</i>
+    Vec4(double x, double y, double z, double w);  <i>// Initializes vector to (x y z w).</i>
+    Vec3(double s);                                <i>// Initializes vector to (s s s s)</i>
+
+    Vec4(const Vec4& v);                           <i>// </i>
+    Vec4(const float  v[4]);                       <i>// These copy values from v</i>
+    Vec4(const double v[4]);                       <i>// </i>
+
+    Vec4(const Vec3& v, double w);                 <i>// Initializes vector to (v[0] v[1] v[2] w)</i>
+</pre>
+
+<h4>Specialized Functions</h4>
+
+<p>In addition to the standard functions provided by all vector classes,
+the <tt>Vec4</tt> class defines certain specialized functions which
+operate only on 4-D vectors.
+
+<p>The <em>cross product</em> of three 4-vectors <tt>u, v, w</tt> is a 
+fourth vector which is perpendicular to all of <tt>u, v, w</tt>.
+It can be computed with the function call
+
+<pre>
+    t = cross(u, v, w);
+</pre>
+
+<p>Since 4-D vectors are frequently 
+used to represent 3-D homogeneous
+coordinates, a projection function is provided.
+<pre>
+    Vec3 proj(const Vec4& v);
+</pre>
+This routine takes a homogeneous vector <i>(x y z w)</i> and returns the
+corresponding 3-vector <i>(x/w y/w z/w)</i>.  If <i>w</i> is 0 then
+the vector <i>(x y z)</i> is returned.

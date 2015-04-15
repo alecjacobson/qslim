@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: vec2.html,v 1.2 2000/09/05 16:11:26 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Vector Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Vector Math</h2>
+
+<h3>class Vec2</h3>
+
+<p> This class implements a 2-dimensional real-valued vector.
+Individual elements are represent with <code>double</code> precision
+floating point numbers.  To use the <tt>Vec2</tt> class you must
+include the header
+<pre>
+    #include &lt;gfx/vec2.h&gt;
+</pre>
+
+<h4>Constructor Methods</h4>
+
+<p>The <tt>Vec2</tt> class defines the following set of constructors:
+
+<pre>
+    Vec2();                    <i>// Initializes vector to (0 0).</i>
+    Vec2(double x, double y);  <i>// Initializes vector to (x y).</i>
+    Vec2(double s);            <i>// Initializes vector to (s s)</i>
+
+    Vec2(const Vec2& v);       <i>// </i>
+    Vec2(const float  v[2]);   <i>// These copy values from v</i>
+    Vec2(const double v[2]);   <i>// </i>
+</pre>
+
+<h4>Specialized Functions</h4>
+
+<p>Beyond the standard functions supported by all vector classes, the
+<tt>Vec2</tt> class provides the following additional function:
+<pre>
+    Vec2 perp(const Vec2 &v);
+</pre>
+that returns a new vector which is perpendicular to the given vector.
+
+</body>
+
+</html>

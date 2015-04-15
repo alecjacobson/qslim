@@ -1,0 +1,25 @@
+#! /bin/sh
+
+CC=cc
+CXX=CC
+export CC
+export CXX
+
+CFLAGS="-O2"
+CXXFLAGS="-O2"
+SITE_CFLAGS="-fullwarn -mips2 -xansi"
+SITE_CXXFLAGS="-MDupdate Makefile.dep ${SITE_CFLAGS}"
+SITE_LDFLAGS="-mips2"
+
+export CFLAGS
+export CXXFLAGS
+export SITE_CFLAGS
+export SITE_CXXFLAGS
+export SITE_LDFLAGS
+
+XF="--with-xformslib=${LOCAL}/lib --with-xformsincl=${LOCAL}/include"
+
+# Don't use Facilities's X libraries!
+X="--x-includes=/usr/include --x-libraries=/usr/lib"
+
+./configure $X $XF --enable-safety=0 $*

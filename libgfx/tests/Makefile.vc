@@ -1,0 +1,27 @@
+include ../vc-config
+
+SRCS = t-vec.cxx t-img.cxx t-gui.cxx t-glimg.cxx t-script.cxx
+OBJS = $(SRCS:.cxx=.obj)
+ALL = $(SRCS:.cxx=.exe)
+
+all: $(ALL)
+
+t-vec.exe: t-vec.obj
+	$(LINK) /out:"t-vec.exe" t-vec.obj $(LDFLAGS) libgfx.lib
+
+t-script.exe: t-script.obj
+	$(LINK) /out:"t-script.exe" t-script.obj $(LDFLAGS) libgfx.lib
+
+t-img.exe: t-img.obj
+	$(LINK) /out:"t-img.exe" t-img.obj $(LDFLAGS) libgfx.lib $(IMG_LIBS)
+
+t-gui.exe: t-gui.obj
+	$(LINK) /out:"t-gui.exe" t-gui.obj $(LDFLAGS) libgfx.lib $(GUI_LIBS) $(IMG_LIBS)
+
+t-glimg.exe: t-glimg.obj
+	$(LINK) /out:"t-glimg.exe" t-glimg.obj $(LDFLAGS) libgfx.lib $(GUI_LIBS) $(IMG_LIBS)
+
+$(ALL): ../src/libgfx.lib
+
+clean:
+	del $(ALL) $(OBJS)

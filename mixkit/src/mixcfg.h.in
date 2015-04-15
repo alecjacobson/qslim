@@ -1,0 +1,69 @@
+/* This -*- C -*- file is meant to be processed by the configure script */
+
+/* Define this if your compiler doesn't support the new C++ 'bool' type */
+#undef MIX_NEED_BOOL
+
+/* Define if your system supports fabsf() */
+#undef MIX_HAVE_FABSF
+
+/* Define if your system supports rint() */
+#undef MIX_HAVE_RINT
+
+/* Define if your system supports getrusage() */
+#undef MIX_HAVE_GETRUSAGE
+
+/* Define if your system does not support getrusage() but supports times() */
+#undef MIX_HAVE_TIMES
+
+/* Define if your system supports random() as opposed to just rand() */
+#undef MIX_HAVE_RANDOM
+
+/* Define if your system uses/needs <unistd.h> */
+#undef HAVE_UNISTD_H
+
+/* Stuff determining the presence of support for alloca() */
+#undef HAVE_ALLOCA_H
+#undef HAVE_ALLOCA
+
+/* Define if ANSI Standard C++ Library iostreams are available and */
+/* you want to use them. */
+#undef MIX_ANSI_IOSTREAMS
+
+/* 
+   Global safety policy for MixKit software.
+
+   Safety levels:
+
+       -2 Reckless
+       -1 Optimized
+        0 Normal
+        1 Cautious
+        2 Paranoid
+
+*/
+#ifndef SAFETY
+#define SAFETY 0
+#endif
+
+/* Define if Sam Leffler's libtiff is available */
+#undef MIX_HAVE_LIBTIFF
+
+/* Define if libpng is available */
+#undef MIX_HAVE_LIBPNG
+
+/* Define if the Independent JPEG Group's libjpeg is available */
+#undef MIX_HAVE_LIBJPEG
+
+/* ***** OpenGL configuration section ***** */
+
+/* Define to the name of OpenGL implementation (e.g., "OpenGL" or "Mesa") */
+#undef MIX_HAVE_OPENGL
+
+/* Define if glPolygonOffsetEXT is available */
+#undef MIX_HAVE_POLYOFFSET_EXT
+
+/* Define if glPolygonOffset is available */
+#undef MIX_HAVE_POLYOFFSET
+
+/* Define if glDrawArraysEXT is available */
+#undef MIX_HAVE_VERTARRAYS

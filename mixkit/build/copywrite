@@ -1,0 +1,46 @@
+#! /usr/local/bin/perl -wi~
+#
+# This script will stamp a copyright notice on each file listed on the
+# command line.  It will overwrite the file with the newly stamped version,
+# leaving a copy of the original contents in a backup file.  Files without
+# both a pre-existing notice and RCS tag will *not* be tagged.
+#
+# $Id: copywrite,v 1.4 1998/10/28 15:16:28 garland Exp $
+#
+
+$notice =
+'Copyright (C) 1998 Michael Garland.  See "COPYING.txt" for details.';
+
+$stamped = "";
+
+while(<>)
+{
+    if( /^(.*)Copyright/ )
+    {
+	$leader = $1;
+	# replace existing notice, if appropriate
+	if( /Michael Garland/ )
+	{
+	    print STDERR "$ARGV\n";
+	    print "$leader$notice\n";
+	}
+	else
+	{
+	    print;
+	}
+	$stamped = $ARGV;
+    }
+    elsif( $stamped ne $ARGV && /^(.*)\$Id/ )
+    {
+	# place notice just before RCS revision tag
+	print STDERR "$ARGV\n";
+	print "$1$notice\n";
+	print "$1\n";
+	print;
+	$stamped = $ARGV;
+    }
+    else
+    {
+	print;
+    }
+}

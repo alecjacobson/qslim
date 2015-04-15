@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: geom3d.html,v 1.2 2000/09/05 19:44:15 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: 3-D Geometric Procedures</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>3-D Geometric Procedures</h2>
+
+<p>Triangles are a very common modeling primitive in many graphics
+applications.  The <tt>libgfx</tt> library provides a package of routines for
+computing various geometric properties of triangles.
+To use this package you must include the standard header file
+<pre>
+    #include &lt;gfx/geom3d.h&gt;
+</pre>
+Note that all of these functions assume that the corners of the triangle are
+listed in <em>counter-clockwise order</em> around the outward pointing normal.
+
+<p>You can compute the (signed) area of a triangle using the following
+function.  Note that the area will be negative if the vertices are listed in
+clockwise order.
+<pre>
+    double triangle_area(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+</pre>
+
+<p>The following functions compute the plane defined by a triangle, and the
+corresponding normal vector.  The standard versions always use unit normal
+vectors while the "raw" versions will use unscaled normals.
+<pre>
+    Vec3 triangle_normal(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+    Vec4 triangle_plane(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+
+    Vec3 triangle_raw_normal(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+    Vec4 triangle_raw_plane(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+</pre>
+
+
+<p>For some meshing applications, it may on occasion be necessary to assess
+the aspect ratio of a triangle.
+<pre>
+    double triangle_compactness(const Vec3&amp;, const Vec3&amp;, const Vec3&amp;);
+</pre>
+This function computes the "compactness" of a triangle.  The returned value
+will be between 0 and 1, with 0 meaning a degenerate (area=0) triangle and 1
+meaning an equilateral triangle.  The formula used, originally suggested by
+Andre Gueziec, is 4*sqrt(3) * Area / (L1 + L2 + L3) where Li is the squared
+length of side <i>i</i> of the triangle.
+
+</body>
+
+</html>

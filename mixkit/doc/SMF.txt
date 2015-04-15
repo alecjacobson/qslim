@@ -1,0 +1,311 @@
+				 SMF
+			 Simple Model Format
+			     version 1.2
+
+
+OVERVIEW
+--------
+
+The MixKit library uses my SMF file format.  This format is designed
+for the description of 3D geometric models.  It describes a single
+object; it does not describe viewing parameters, scene hierarchies, or
+anything else.
+
+SMF is modeled on the Wavefront OBJ format.  In fact, an SMF file
+which uses only commands listed under "Core Operators" is also a valid
+OBJ file.
+
+
+FILE STRUCTURE
+--------------
+
+
+An SMF file is a text file consisting of a series of lines.  Each line
+is interpreted independently and in sequence.  A line may have one of
+the following three forms:
+
+    (1) Entirely whitespace
+
+            These lines are completely ignored.
+
+    (2) A comment line, beginning with the character '#'
+
+            These lines are also ignored.
+
+    (3) A command line of the form: <op> <arg>*
+
+            The first token on the line is interpreted as a command
+            name.  The remaining tokens are arguments to the command;
+            their interpretation is command-dependent.  Tokens are
+            whitespace-separated character sequences.
+
+
+Core Operators
+
+
+    v <x> <y> <z>
+
+        Defines a new vertex with coordinates [<x> <y> <z>].  Within a
+        given scope, vertices are implicitly numbered starting from 1
+        (NOT 0).
+
+    f <v1> <v2> <v3>
+
+        Defines a new triangular face whose corners are the vertices
+        identified by the three numbers <v1> <v2> <v3>.  The vertices
+        are generally assumed to be listed in counter-clockwise order.
+
+
+
+Attribute Value Operators
+
+
+    bind [c|n|r] [vertex|face]
+
+        Before listing attribute values, you must specify how they are
+        to be bound.  Each attribute type may be bound either 1 per
+        vertex or 1 per face.
+
+    c <r> <g> <b>
+
+        Defines an RGB color.  The individual color values should in
+        the range [0,1].
+
+
+    n <a> <b> <c>
+
+        Defines a normal vector.  It will be automatically converted
+        into a unit vector.
+
+
+    r <s> <t>
+
+        Defines a texture coordinate.  The <s>,<t> values should be in
+        the range [0,1].
+
+    tex <filename>
+
+        Specify a file to load the texture from.  This facility is
+        currently rather limited.  The <filename> will be resolved in
+        the current directory, not the location of the SMF file, and
+        the only supported image format is the PPM format.  Please
+        note: a model is only allowed to have a SINGLE texture.
+
+
+Grouping & Transformation Operators
+
+
+    begin
+    end
+
+        These commands define a scope in the file.  Vertices are
+        numbered separately within each scope and the effect of
+        transformations is limited to the current scope (see
+        transformed cube example below).
+
+
+    trans <dx> <dy> <dz>
+    rot [x|y|z] <theta>
+    scale <sx> <sy> <sz>
+
+        Concatentate a new transformation to the current
+        transformation.  Note that rotations can only be specified
+        about the axes and that <theta> is given in degrees.
+
+    t_trans <dx> <dy>
+    t_scale <sx> <sy>
+
+        You may also apply scale and translate transformations to
+        texture coordinates.
+
+    set vertex_correction <i>
+
+        This is a convenience for dealing with files where vertices
+        are not correctly numbered.  It applies an offset to all
+        vertex identifiers.  If your file contains vertices which were
+        numbered starting from 0, adding the line:
+
+            set vertex_correction +1
+
+        would transform the identifiers into the proper 1-based range.
+
+
+
+EXAMPLE: Unit Cube
+------------------
+
+This model is the surface of the unit cube.  Each of the six faces of
+the cube is represented by two triangles.
+
+    # Vertices on the bottom of the cube (z=0)
+    v 0 0 0
+    v 1 0 0
+    v 0 1 0
+    v 1 1 0
+    # Vertices on the top of the cube (z=1)
+    v 0 0 1
+    v 1 0 1
+    v 0 1 1
+    v 1 1 1
+
+    # Triangles on the bottom
+    f 1 4 2
+    f 1 3 4
+
+    # Triangles on the top
+    f 5 6 8
+    f 5 8 7
+
+    # All the remaining sides
+    f 1 2 6
+    f 1 6 5
+    f 2 4 8
+    f 2 8 6
+    f 4 3 7
+    f 4 7 8
+    f 3 1 5
+    f 3 5 7
+
+
+EXAMPLE: Unit Color Cube #1
+---------------------------
+
+In this example, RGB colors are attached to each vertex.  When
+displayed, this cube will have colors smoothly interpolated across its
+faces.
+
+    # First, define the geometry of the cube as above
+    v 0 0 0
+    v 1 0 0
+    v 0 1 0
+    v 1 1 0
+    v 0 0 1
+    v 1 0 1
+    v 0 1 1
+    v 1 1 1
+    f 1 4 2
+    f 1 3 4
+    f 5 6 8
+    f 5 8 7
+    f 1 2 6
+    f 1 6 5
+    f 2 4 8
+    f 2 8 6
+    f 4 3 7
+    f 4 7 8
+    f 3 1 5
+    f 3 5 7
+
+    # Colors will be bound 1 per vertex
+    bind c vertex
+    c 0 0 0
+    c 1 0 0
+    c 0 1 0
+    c 1 1 0
+    c 0 0 1
+    c 1 0 1
+    c 0 1 1
+    c 1 1 1
+
+EXAMPLE: Unit Color Cube #2
+---------------------------
+
+An alternative way to color the cube is to assign a single RGB color
+to each face of the cube.
+
+    # First, define the geometry of the cube as above
+    v 0 0 0
+    v 1 0 0
+    v 0 1 0
+    v 1 1 0
+    v 0 0 1
+    v 1 0 1
+    v 0 1 1
+    v 1 1 1
+    f 1 4 2
+    f 1 3 4
+    f 5 6 8
+    f 5 8 7
+    f 1 2 6
+    f 1 6 5
+    f 2 4 8
+    f 2 8 6
+    f 4 3 7
+    f 4 7 8
+    f 3 1 5
+    f 3 5 7
+
+    # Colors will be bound 1 per face
+    bind c face
+    c 1 0 0
+    c 1 0 0
+    c 0 1 0
+    c 0 1 0
+    c 0 0 1
+    c 0 0 1
+    c 1 1 0
+    c 1 1 0
+    c 0 1 1
+    c 0 1 1
+    c 1 0 1
+    c 1 0 1
+
+EXAMPLE: Transformed Cubes
+--------------------------
+
+Here is a simple example of using transformations and begin/end
+blocks.  Note that within the begin/end block, vertices are numbered
+starting from 1 again.  Consequently, you may not reference vertices
+outside the block.
+
+    v 0 0 0
+    v 1 0 0
+    v 0 1 0
+    v 1 1 0
+    v 0 0 1
+    v 1 0 1
+    v 0 1 1
+    v 1 1 1
+
+    f 1 4 2
+    f 1 3 4
+    f 5 6 8
+    f 5 8 7
+    f 1 2 6
+    f 1 6 5
+    f 2 4 8
+    f 2 8 6
+    f 4 3 7
+    f 4 7 8
+    f 3 1 5
+    f 3 5 7
+
+    begin
+       trans -1.2 0 0
+
+       trans 0.5 0.5 0.5
+       rot x 45
+       trans -0.5 -0.5 -0.5
+
+       v 0 0 0
+       v 1 0 0
+       v 0 1 0
+       v 1 1 0
+       v 0 0 1
+       v 1 0 1
+       v 0 1 1
+       v 1 1 1
+
+       f 1 4 2
+       f 1 3 4
+       f 5 6 8
+       f 5 8 7
+       f 1 2 6
+       f 1 6 5
+       f 2 4 8
+       f 2 8 6
+       f 4 3 7
+       f 4 7 8
+       f 3 1 5
+       f 3 5 7
+    end

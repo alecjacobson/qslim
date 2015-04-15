@@ -1,0 +1,38 @@
+# $Id: gfx-config.in,v 1.9 2002/06/13 18:34:59 garland Exp $
+
+CC = @CC@
+CXX = @CXX@
+RANLIB = @RANLIB@
+RM = @RM@
+FLTKCONFIG = @FLTKCONFIG@
+
+WIN_FLAGS = @X_CFLAGS@
+WIN_LFLAGS = @X_LIBS@
+CFLAGS = @CFLAGS@ $(WIN_FLAGS)
+CXXFLAGS = @CXXFLAGS@ $(WIN_FLAGS)
+LDFLAGS = @LDFLAGS@ $(WIN_LFLAGS)
+
+WIN_LIBS  = @X_PRE_LIBS@ @X_CORE@ @X_EXTRA_LIBS@
+WIN_DLIBS  = @X_PRE_LIBS@ @X_DCORE@ @X_EXTRA_LIBS@
+IMG_LIBS = @IMG_LIBS@
+GL_LIBS = @GL_LIBS@
+FLTK_LIBS = @FLTK_LIBS@
+GUI_LIBS = $(FLTK_LIBS) $(IMG_LIBS) $(GL_LIBS) $(WIN_LIBS)
+
+CC_DEPEND = @CC_DEPEND@ $(CFLAGS)
+CXX_DEPEND = @CXX_DEPEND@ $(CXXFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .fl .c .cc .cxx .o
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $<
+
+.fl.cxx:
+	fluid -c $<
+
+.fl.h:
+	fluid -c $<

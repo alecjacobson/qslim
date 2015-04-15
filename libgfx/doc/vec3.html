@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: vec3.html,v 1.2 2000/06/13 18:59:13 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Vector Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Vector Math</h2>
+
+<h3>class Vec3</h3>
+
+<p> This class implements a 3-dimensional real-valued vector.
+Individual elements are represent with <code>double</code> precision
+floating point numbers.  To use the <tt>Vec3</tt> class you must
+include the header
+<pre>
+    #include &lt;gfx/vec3.h&gt;
+</pre>
+
+<h4>Constructor Methods</h4>
+
+<p>The <tt>Vec3</tt> class defines the following set of constructors:
+
+<pre>
+    Vec3();                              <i>// Initializes vector to (0 0 0).</i>
+    Vec3(double x, double y, double z);  <i>// Initializes vector to (x y z).</i>
+    Vec3(double s);                      <i>// Initializes vector to (s s s)</i>
+
+    Vec3(const Vec3& v);                 <i>// </i>
+    Vec3(const float  v[3]);             <i>// These copy values from v</i>
+    Vec3(const double v[3]);             <i>// </i>
+
+    Vec3(const Vec2& v, double z);       <i>// Initializes vector to (v[0] v[1] z)</i>
+</pre>
+
+<h4>Specialized Functions</h4>
+
+<p>In addition to the standard functions provided by all vector classes,
+the <tt>Vec3</tt> class defines certain specialized functions which
+operate only on 3-D vectors.
+
+<p>The <em>cross product</em> of two vectors <tt>v, w</tt> is a third
+vector which is perpendicular to both <tt>v</tt> and <tt>w</tt>.
+It can be computed with either a function call or an overloaded
+operator
+
+<pre>
+    u = cross(v, w);   <i>// Equivalent ways of computing</i>
+    u = v ^ w;         <i>//    the cross product of v and w.</i>
+</pre>
+
+<p>Since 3-D vectors may be used to represent 2-D homogeneous
+coordinates, a projection function is provided.
+<pre>
+    Vec2 proj(const Vec3& v);
+</pre>
+This routine takes a homogeneous vector <i>(x y w)</i> and returns the
+corresponding 2-D vector <i>(x/w y/w)</i>.  If <i>w</i> is 0 then
+the vector <i>(x y)</i> is returned.
+
+</body>
+
+</html>

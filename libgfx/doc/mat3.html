@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: mat3.html,v 1.2 2000/09/05 19:43:19 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Matrix Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Matrix Math</h2>
+
+<h3>class Mat3</h3>
+
+<p>This class implements a 3x3 real-valued matrix.
+Individual elements are represented with <code>double</code> precision
+floating point numbers.  To use the <tt>Mat3</tt> class you must include the
+header
+<pre>
+    #include &lt;gfx/mat3.h&gt;
+</pre>
+
+<h4>Constructor Methods</h4>
+
+<p>The <tt>Mat3</tt> class defines the following set of constructors:
+
+<pre>
+    <i>// Initialize all elements to 0</i>
+    Mat3();
+
+    <i>// Initialize rows with given vectors</i>
+    Mat3(const Vec3&amp; r0,const Vec3&amp; r1,const Vec3&amp; r2);
+
+    <i>// Copy values from A</i>
+    Mat3(const Mat3&amp; A); 
+</pre>
+
+
+</body>
+</html>

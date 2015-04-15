@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: intvec.html,v 1.2 2000/09/05 20:29:15 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Packed Integer Vectors</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Packed Integer Vectors</h2>
+
+<p>The <a href="vec.html">vector package</a> provides the standard way to
+represent and manipulate vector quantities.
+These vectors are primarily designed to represent real-valued vectors using
+floating point numbers.
+However, there are times when it is more convenient to use a packed integer
+vector format.  That is the purpose of this package, which you can use by
+including the header file
+<pre>
+    #include &lt;intvec.h&gt;
+</pre>
+
+<p>A <em>packed integer vector</em> is an <i>n</i> element vector, each of whose
+elements are <i>k</i>-bit integers.  These <i>k</i>-bit integers are
+interpreted as representing the range [0, 1] for unsigned types and [-1, 1]
+for signed types.  For example, suppose we have a vector whose elements are
+unsigned 8-bit quantities (e.g., of type <tt>unsigned char</tt>).
+Each value would have an integral value in the range [0, 255], but these
+values would always be interpreted as real values ranging between [0, 1].
+
+<h3>class IntVec</h3>
+<p>Packed integer vectors are declared using the following template class
+<pre>
+    template&lt;class T, int T_MAX, int N&gt;  class IntVec;
+</pre>
+The type <tt>T</tt> is the type of the constituent elements (e.g.,
+<tt>unsigned char</tt>) and <tt>T_MAX</tt> is the maxium representable value
+for this type (e.g., <tt>UCHAR_MAX</tt>).  The number of elements in the
+vector is determined by <tt>N</tt>.  Note that ANSI C defines appropriate
+maximum values of integer types in &lt;limits.h&gt;.
+
+<p>Classes created from the <tt>IntVec</tt> template provide a small set of
+fundamental public methods:
+<ul>
+<li>A default constructor that initializes all elements of the vector to 0.
+
+<li>A C-style [] bracket accessor which returns, as a
+<tt>double</tt> the appropriate element of the vector.
+
+<li>A vector assignment operator (<tt>v = w</tt>).
+
+<li>A scalar assignment operator (<tt>v = 3.14</tt>).
+</ul>
+
+<h3>class IntVec3</h3>
+
+<p>Because 3-D vectors are particularly common in graphics applications, this
+package provides explicit support for them.
+<pre>
+    template &lt;class T, int T_MAX&gt;  class IntVec3;
+</pre>
+
+<p>In addition to the standard <tt>IntVec</tt> methods, <tt>IntVec3</tt>
+provides the following additional constructors, all of which allow the values
+of the vector to be explicitly initialized.
+<pre>
+    IntVec3(double x, double y, double z);
+    IntVec3(const Vec3&amp; v);
+    IntVec3(const float  v[3]);
+    IntVec3(const double v[3]);
+</pre>
+
+<p>It also provides the following methods for manipulating the elements of the
+vector:
+<pre>
+    Vec3 unpack() const;                      <i>// Return vector as Vec3</i>
+    void pack(const Vec3&amp; v);                 <i>// Set vector from v</i>
+    void pack(double x, double y, double z);  <i>// Set vector from x,y,z</i>
+</pre>
+
+<p>A typical use of this class would be in defining a type for RGB colors
+represented with 8 bits per channel.  Such a type could be declared as
+follows:
+<pre>
+    typedef IntVec3<unsigned char, UCHAR_MAX> byteColor;
+</pre>
+
+</body>
+
+</html>

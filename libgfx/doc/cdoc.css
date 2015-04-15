@@ -1,0 +1,86 @@
+/*
+ * Stylesheet for code documentation
+ *
+ * $Id: cdoc.css,v 1.2 2001/10/02 16:09:20 garland Exp $
+ */
+
+BODY {
+    font-family: "Times New Roman", "Times", serif;
+    background-color: white;
+    color: black;
+}
+
+@media screen {
+    BODY {
+	 margin-left: 11.11%;
+	 margin-right: 11.11%;
+    }
+
+    /* To be used for floating navbars */
+    DIV.navbar {
+	font-family: Arial Narrow;
+	display: block;
+	text-align: left;
+	float: right;
+	padding-bottom: 2pt;
+	padding-left: 2pt;
+	border-left: thin dashed black;
+	border-bottom: thin dashed black;
+    }
+}
+
+@media print {
+    /* IE often prints Web pages in excessively large fonts */
+    BODY { font-size: 10pt; }
+
+    /* Navbars should not be printed */
+    DIV.navbar { display: none }
+
+    /* H2 headers are used as the top-level elements for separate sections */
+    H2 { page-break-before: always }
+}
+
+H1, H2, H3, H4, H5, H6 { clear: both; font-family: Arial, sans-serif; }
+H1 { font-size: 249% }
+H2 { font-size: 172%; }
+H3 { font-size: 144%; }
+H4 { font-size: 120%; margin-bottom: 0.5em; }
+H5,H6 { font-size: 100%; margin-bottom: 0.2em; }
+
+H1, H2, H3, H4 {
+     color: #4444aa;
+     background-color: #cccccc;
+     padding-top: 4px;
+     padding-left: 4px;
+     padding-right: 4px;
+     padding-bottom: 4px;
+}
+
+H1,H2 { margin-left: -1.5em; }
+H3 { margin-left: -0.75em; }
+
+P { text-indent: 0pt; }
+P.indent { text-indent: 1em; }
+P.justify { text-align: justify; }
+
+PRE.code { margin-left: 2em }
+
+/* The standard size scale */
+.min5 { font-size: 40%; }
+.min4 { font-size: 48%; }
+.min3 { font-size: 58%; }
+.min2 { font-size: 69%; }
+.min1 { font-size: 83%; }
+.min0 { font-size: 100%; }
+.mag0 { font-size: 100%; }
+.mag1 { font-size: 120%; }
+.mag2 { font-size: 144%; }
+.mag3 { font-size: 172%; }
+.mag4 { font-size: 207%; }
+.mag5 { font-size: 249%; }
+
+/* Link styles */
+A { text-decoration: none }
+A:active {color: red}
+A:hover {color: red}
+A:visited {color: purple}

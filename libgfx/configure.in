@@ -1,0 +1,263 @@
+dnl Process this file with 'autoconf' to produce a 'configure' script
+dnl $Id: configure.in,v 1.17 2003/07/07 17:24:53 zelinka Exp $
+
+AC_REVISION($Revision: 1.17 $)
+AC_INIT(include/gfx/gfx.h)
+AC_CONFIG_HEADER(include/gfx/config.h)
+
+sys=`uname`
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Handle command line options
+dnl --
+
+AC_ARG_WITH(libtiff-lzw,
+	[  --with-libtiff-lzw      Use the libtiff LZW compression kit],
+	AC_DEFINE(HAVE_LIBTIFF_LZW))
+
+AC_ARG_WITH(local,
+	[  --with-local[=DIR]        Use libraries in DIR (default /usr/local)],
+	[if test $withval = "yes"; then withval="/usr/local"; fi
+	CPPFLAGS="-I${withval}/include"
+	LDFLAGS="-L${withval}/lib"])
+
+case $sys in
+    CYGWIN*|cygwin*)
+	AC_ARG_ENABLE(cygwin,
+	    [  --enable-cygwin         Use the Cygwin libraries (default=yes)])
+
+	if test "$enable_cygwin" = "no"; then
+	    CFLAGS="$CFLAGS -mno-cygwin"
+	    CPPFLAGS="$CPPFLAGS -mno-cygwin"
+	    CXXFLAGS="$CXXFLAGS -mno-cygwin"
+	fi
+	;;
+esac
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Check for programs that the build process needs
+dnl --
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_RANLIB
+AC_LANG_CPLUSPLUS
+AC_PATH_PROG(RM, rm)
+AC_CHECK_PROG(FLTKCONFIG, fltk-config, fltk-config, :)
+
+dnl -- It might be good to write a more thorough test here
+if test $GCC = "yes"; then
+  CC_DEPEND="\$(CC) -M"
+  CXX_DEPEND="\$(CXX) -M"
+else
+  CC_DEPEND="makedepend"
+  CXX_DEPEND="makedepend"
+fi
+
+AC_SUBST(CC_DEPEND)
+AC_SUBST(CXX_DEPEND)
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Check for libraries
+dnl --
+
+AC_CHECK_LIB(m, sqrt)
+
+dnl -- Save the basic (non-GUI) compilation configuration
+BASE_LIBS=${LIBS}
+BASE_CFLAGS=${CFLAGS}
+BASE_CXXFLAGS=${CXXFLAGS}
+BASE_LDFLAGS=${LDFLAGS}
+
+IMG_LIBS=""
+AC_SUBST(IMG_LIBS)
+
+
+dnl -- We pass IMG_LIBS as need libraries to these check because libtiff
+dnl -- can be compiled to use both libz and libjpeg.
+
+AC_CHECK_LIB(z, zlibVersion, AC_DEFINE(HAVE_LIBZ) \
+			IMG_LIBS="$IMG_LIBS -lz", , $IMG_LIBS)
+
+AC_CHECK_LIB(jpeg, jpeg_start_compress, AC_DEFINE(HAVE_LIBJPEG) \
+                                IMG_LIBS="$IMG_LIBS -ljpeg", , $IMG_LIBS)
+
+AC_CHECK_LIB(tiff, TIFFOpen, AC_DEFINE(HAVE_LIBTIFF) \
+                                IMG_LIBS="$IMG_LIBS -ltiff", , $IMG_LIBS)
+
+AC_CHECK_LIB(png, png_read_image, AC_DEFINE(HAVE_LIBPNG) \
+                                IMG_LIBS="$IMG_LIBS -lpng", , $IMG_LIBS)
+
+
+
+case $sys in
+
+Darwin*)
+	AC_DEFINE(HAVE_OPENGL, "OpenGL")
+	AC_DEFINE(HAVE_POLYOFFSET)
+	GL_LIBS="-framework AGL -framework OpenGL"
+	X_CORE="-framework Carbon -framework ApplicationServices"
+	X_DCORE="$X_CORE"
+	X_PRE_LIBS=""
+	X_EXTRA_LIBS=""
+	
+	AC_SUBST(X_CFLAGS)
+	AC_SUBST(X_LIBS)
+	AC_SUBST(X_PRE_LIBS)
+	AC_SUBST(X_EXTRA_LIBS)
+	;;
+
+CYGWIN*|cygwin*)
+	CPPFLAGS="${CPPFLAGS} -DWIN32"
+	AC_DEFINE(HAVE_OPENGL, "OpenGL")
+	AC_DEFINE(HAVE_POLYOFFSET)
+	GL_LIBS="-lopengl32 -lglu32"
+	X_DCORE="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -lole32 -luuid -lcomctl32 -lwsock32"
+	X_CORE="-mwindows -lole32 -luuid -lcomctl32 -lwsock32"
+         
+	X_PRE_LIBS=""
+	X_EXTRA_LIBS=""
+	
+	AC_SUBST(X_CFLAGS)
+	AC_SUBST(X_LIBS)
+	AC_SUBST(X_PRE_LIBS)
+	AC_SUBST(X_EXTRA_LIBS)
+	;;
+
+*)
+    AC_PATH_XTRA
+    CFLAGS="${CFLAGS} ${X_CFLAGS}"
+    CXXFLAGS="${CXXFLAGS} ${X_CFLAGS}"
+    LIBS="${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS} ${LIBS}"
+    LDFLAGS="${LDFLAGS} ${X_LIBS}"
+
+    X_CORE="-lX11 -lXext"
+    X_DCORE="$X_CORE"
+
+    glneeds="$X_CORE $X_EXTRA_LIBS"
+
+    AC_CHECK_LIB(GL, glBegin, \
+	AC_DEFINE(HAVE_OPENGL, "OpenGL") GL_LIBS="-lGL -lGLU", \
+	AC_CHECK_LIB(MesaGL, glBegin, \
+	    [AC_DEFINE(HAVE_OPENGL, "Mesa")
+	     GL_LIBS="-lMesaGL -lMesaGLU"], ,$glneeds),$glneeds)
+
+    LIBS="${GL_LIBS} $glneeds"
+
+    dnl -- Check for OpenGL extensions
+    AC_CHECK_FUNC(glPolygonOffset, AC_DEFINE(HAVE_POLYOFFSET))
+    AC_CHECK_FUNC(glPolygonOffsetEXT, AC_DEFINE(HAVE_POLYOFFSET_EXT))
+    ;;
+esac
+
+AC_SUBST(X_CORE)
+AC_SUBST(X_DCORE)
+AC_SUBST(GL_LIBS)
+
+dnl -- Check for FLTK
+dnl    We use custom AC_TRY_LINK tests because AC_CHECK_LIB can't really
+dnl    properly handle C++ name mangling.
+
+FLTK_LIBS="-lfltk"
+
+AC_MSG_CHECKING(for FLTK library)
+save_libs=$LIBS
+LIBS="$FLTK_LIBS $X_CORE $LIBS"
+AC_TRY_LINK(
+    [#include <FL/Fl.H>],
+    [Fl::run();],
+    [AC_DEFINE(HAVE_FLTK)
+     AC_MSG_RESULT(yes)],
+    [AC_MSG_RESULT(no)
+     FLTK_LIBS=""])
+LIBS=$save_libs
+
+AC_MSG_CHECKING(for FLTK GL support)
+save_libs=$LIBS
+LIBS="$FLTK_LIBS $GL_LIBS $X_CORE $LIBS"
+AC_TRY_LINK(
+    [#include <FL/Fl.H>
+     #include <FL/Fl_Gl_Window.H>],
+    [Fl_Gl_Window win(640,480);],
+    [AC_DEFINE(HAVE_FLTK_GL)
+     AC_MSG_RESULT(in libfltk)],
+    [FLTK_LIBS="-lfltk_gl $FLTK_LIBS"
+     LIBS="$FLTK_LIBS $GL_LIBS $X_CORE $save_libs"
+     AC_TRY_LINK(
+	[#include <FL/Fl.H>
+	 #include <FL/Fl_Gl_Window.H>],
+	[Fl_Gl_Window win(640,480);],
+	[AC_DEFINE(HAVE_FLTK_GL)
+	 AC_MSG_RESULT(in libfltk_gl)],
+	[FLTK_LIBS="-lfltk"
+	 AC_MSG_RESULT(no)])])
+
+LIBS=$save_libs
+AC_SUBST(FLTK_LIBS)
+
+dnl -- Restore non-GUI compilation settings
+LIBS=${BASE_LIBS}
+CFLAGS=${BASE_CFLAGS}
+CXXFLAGS=${BASE_CXXFLAGS}
+LDFLAGS=${BASE_LDFLAGS}
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Check for header files that we'll need
+dnl --
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(limits.h)
+AC_CHECK_HEADERS(unistd.h)
+
+dnl -- OpenGL Extension headers
+AC_CHECK_HEADERS(GL/glext.h)
+AC_CHECK_HEADERS(GL/glxext.h)
+AC_CHECK_HEADERS(GL/wglext.h)
+
+dnl -- STL headers that aren't always available
+AC_CHECK_HEADERS(hash_map)
+AC_CHECK_HEADERS(hash_set)
+AC_CHECK_HEADERS(ext/hash_map)
+AC_CHECK_HEADERS(ext/hash_set)
+AC_CHECK_HEADERS(valarray)
+AC_CHECK_HEADERS(sstream)
+AC_CHECK_HEADERS(strstream)
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Check for typedefs, declarations, and compiler characteristics
+dnl --
+
+AC_C_CONST
+AC_C_INLINE
+
+AC_MSG_CHECKING(for type bool)
+AC_TRY_COMPILE([],
+	[bool x; x;],
+        [AC_MSG_RESULT(yes)
+	 AC_DEFINE(HAVE_BOOL)],
+        AC_MSG_RESULT(no))
+
+
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS(rint getrusage times random getopt getopt_long)
+
+dnl ----------------------------------------------------------------------
+dnl --
+dnl -- Wrap up and write the results
+dnl --
+
+ROOT=`pwd`
+
+CPPFLAGS="$CPPFLAGS -I${ROOT}/include -DHAVE_CONFIG_H"
+CFLAGS="$BASE_CFLAGS $CPPFLAGS"
+CXXFLAGS="$BASE_CXXFLAGS $CPPFLAGS"
+LDFLAGS="$BASE_LDFLAGS -L${ROOT}/src"
+
+AC_OUTPUT(gfx-config)

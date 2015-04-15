@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: vec.html,v 1.3 2002/01/14 18:21:43 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Vector Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Vector Math</h2>
+
+<p>The <tt>libgfx</tt> vector math package provides classes that 
+make it much more convenient to write vector equations.
+Two dimensional [<a href="vec2.html">Vec2</a>],
+three dimensional [<a href="vec3.html">Vec3</a>],
+and four dimensional [<a href="vec4.html">Vec4</a>]
+vector classes are provided.
+
+<p>A vector consists of <i>n</i> numeric values.  These vector types are
+actually implemented using template classes such as <tt>TVec3&lt;class
+T&gt;</tt> that allow the application to specify the type of value used to
+represent the vector elements.  The standard classes described in this
+documentation (<tt>Vec2</tt>, <tt>Vec3</tt>, and <tt>Vec4</tt>) use double
+precision floating point values.  Corresponding classes using single precision
+floating point values (<tt>Vec2f</tt>, <tt>Vec3f</tt>, and <tt>Vec4f</tt>) are
+also provided.
+
+<p>The elements of a vector are accessed with the standard bracket notation
+used for arrays.  And like C++ arrays, vectors are indexed starting from 0.
+Thus the elements of a 3-vector can be assigned as follows:
+
+<pre>
+    Vec3 v;
+
+    v[0] = 1.0;
+    v[1] = 0.0;
+    v[2] = 2.0;
+</pre>
+
+The default constructors (as used in the previous example) always
+initialize the vector elements to 0.  All vector classes also provide
+constructors which accept the initial element values as arguments.
+Thus the previous example could be more succinctly written as:
+
+<pre>
+    Vec3 v(1.0, 0.0, 2.0);
+</pre>
+
+Vectors can also be automatically cast to <code>double</code> pointer
+types.  Continuing the preceding example, the following is perfectly legal:
+<pre>
+    double *w = v;     <i>// w points to the first element of v</i>
+    w[1] = 3.14;       <i>// Exactly equivalent to v[1] = 3.14</i>
+</pre>
+
+<p><strong>Warning:</strong>
+For efficiency reasons, <em>accessors are not range checked</em>.
+Thus you can legally write
+
+<pre>
+    Vec3 v;
+    v[42] = 3.14159;
+</pre>
+
+and this will cause an invalid memory access beyond the bounds of the
+vector.  This may cause a memory fault or it may just silently
+over-write other data.  Therefore you must make sure that you only
+access valid elements of arrays.
+
+
+<h3>Arithmetic Operators</h3>
+
+<p>One of the primary goals of the vector package is to simplify the
+coding of vector equations.  To accomplish this, it makes use of
+<em>operator overloading</em>.
+
+
+<p><strong>Assignment</strong>&nbsp;&nbsp;
+Vectors can be assigned the values of other vectors or scalars.
+A vector assignment <tt>v = w</tt> copies the elements of <tt>w</tt>
+into the corresponding elements of <tt>v</tt>.  A scalar assignment
+<tt>v = 1.0</tt> copies the given scalar, in this case <tt>1.0</tt>,
+into each of the elements of <tt>v</tt>.
+
+<p><strong>Addition/Subtraction</strong>&nbsp;&nbsp; Vectors can be
+added together either with the binary addition operator (<tt>u = v +
+w</tt>) or the additive assignment operator (<tt>u += v</tt>).
+Subtraction operates similarly, using subtraction rather than addition
+operators.
+
+<p><strong>Scalar Multiplication/Division</strong>&nbsp;&nbsp;
+Vectors can be multiplied by scalar values using either the binary
+operator (<tt>v * 2.0</tt>) or the accumulation operator (<tt>v *=
+2.0</tt>).  Scalar division operates similarly.
+
+<p><strong>Inner Product</strong>&nbsp;&nbsp;
+The inner product (or dot product) of two vectors is written with the
+standard multiplication operator: <tt>v * w</tt>.
+
+<h3>Standard Vector Functions</h3>
+
+<p>All vector classes support a standard set of functions for
+performing common operations on vectors.  These functions are:
+<pre>
+    <i>// Returns the squared length of the vector v</i>
+    inline double norm2(const Vec_& v);
+
+    <i>// Returns the length of the vector v</i>
+    inline double norm(const Vec_& v);
+
+    <i>// Adjusts v to have unit length.  Mostly equivalent to v/=norm(v)</i>
+    inline void unitize(Vec_& v);
+</pre>
+
+<p>Vector can also be read from and written to C++ iostreams using the
+standard <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> operators.
+
+</body>
+
+</html>

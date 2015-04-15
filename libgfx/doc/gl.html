@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: gl.html,v 1.2 2000/09/05 16:33:04 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: OpenGL Support</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>OpenGL Support</h2>
+
+<p>
+
+
+<p><strong>Important:</strong>
+The standard way to include the OpenGL headers is to include the
+headers
+
+<pre>
+    #include &lt;GL/gl.h&gt;
+    #include &lt;GL/glu.h&gt;
+</pre>
+
+However, to ensure portability you <em>should not</em> do this; use
+the following inclusion instead:
+
+<pre>
+    #include &lt;gfx/gl.h&gt;
+</pre>
+
+The primary reason for this is that the Microsoft OpenGL headers do
+not work properly unless you have included <tt>&lt;windows.h&gt;</tt>
+first.  This <tt>libgfx</tt> header takes care of the necessary
+<tt>#ifdefs</tt> and keeps your code looking cleaner.
+
+
+<h3>Utility Functions</h3>
+
+
+To gain access to these utility functions, include the header
+
+<pre>
+    #include &lt;gfx/gltools.h&gt;
+</pre>
+
+<p>Given a pixel coordinate in the OpenGL viewport, it is often
+necessary to project this to a 3-D point in the world being displayed.
+You can use the function
+<pre>
+    int unproject_pixel(int *pixel, double *world, double z=0.0);
+</pre>
+to accomplish this.
+
+
+
+<p>To simplify the display of 3-D scenes, the function
+<pre>
+    void camera_lookat(const Vec3& min, const Vec3& max, double aspect);
+</pre>
+will set up a standard viewing geometry for displaying an object
+bounded by the axis-aligned box [<tt>min</tt>, <tt>max</tt>] in a
+window whose aspect ratio is <tt>aspect</tt>.
+The camera will be looking at the center of the box, from a position
+further along the <i>z</i> axis, with a 60&deg; field of view.
+The viewing transform will be multiplied into the current matrix,
+using calls to <tt>gluPerspective()</tt> and <tt>gluLookAt()</tt>.
+
+<p>Errors during OpenGL processing are not reported to the user, they are
+merely flagged in the current OpenGL state.  To check for and report any
+OpenGL errors, you can call the function:
+<pre>
+    void check_opengl_errors(const char *msg=NULL);
+</pre>
+An optional message can be provided which will be prepended to the error
+reported (if any).
+
+<h4>Picking</h4>
+
+<p>Interactive programs frequently need to allow the user to select
+individual components of the scene being displayed by clicking on the
+rendered image.  Given a pixel location in the window, the application
+must determine which entity the user clicked on.
+The standard technique for doing this with OpenGL is with the selection
+buffer.  The <tt>libgfx</tt> library provides some utility functions to make
+using the selection buffer somewhat easier.
+Details on using the selection buffer can be found in the OpenGL Programming
+Guide.
+
+<p>Before drawing your primitives, call the function
+<pre>
+    void begin_opengl_pick(int *ctr, double radius, GLuint *buf, int size);
+</pre>
+with the location of the user's pointer (<tt>ctr</tt>) and
+the <tt>radius</tt> of the region to consider.  You will also need to allocate
+and pass a buffer of object identifiers to hold the candidate objects.
+Having set things up, you can draw your primitives as usual, assigning an
+integer identifier to each using the <tt>glLoadName()</tt> function.
+After all primitives have been drawn, call the function
+<pre>
+    GLuint complete_opengl_pick(GLuint *buffer);
+</pre>
+The returned value will be the identifier of the object clicked on, or
+<tt>opengl_pick_nil</tt> if the user clicked on the background.
+
+</body>
+
+</html>

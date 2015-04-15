@@ -1,0 +1,95 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "MixKit"=..\mixkit\MixKit.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "QSlim"=.\QSlim\QSlim.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libgfx
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MixKit
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "QVis"=.\QVis\QVis.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libgfx
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MixKit
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SMFView"=.\SMFView\SMFView.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name libgfx
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MixKit
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "libgfx"=..\libgfx\vc6\libgfx\libgfx.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: build.html,v 1.8 2002/04/02 17:01:32 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Building the Library</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Building the Library</h2>
+
+<p><tt>libgfx</tt> is a C++ library which is meant to be fairly easy
+to compile on a wide range of systems.  It was developed under Windows
+NT 4.0, Windows 2000, and RedHat Linux 6.
+
+<p>This library does make use of the ANSI C++ Standard Library.  For
+instance, it uses the new <tt>&lt;iostream&gt;</tt> rather than the
+old <tt>&lt;iostream.h&gt;</tt> package.  And it does make some
+minimal use of the Standard Template Library (STL).  Therefore, it may
+not work on older C++ compilers.  It is known to work on Microsoft
+Visual C++ version 5.0 and above and GNU GCC version 2.9 and above.
+
+<p><strong>Required</strong> external libraries:
+<ul>
+<li>The <a href="http://www.fltk.org">FLTK</a> graphical interface toolkit.
+<li>An <a href="http://www.opengl.org">OpenGL</a> library
+or the <a href="http://www.mesa3d.org">Mesa</a> library.
+</ul>
+
+
+<p><strong>Optional</strong> external libraries:
+<ul>
+<li>The <a href="http://www.libtiff.org">libtiff</a> library for TIFF image
+file support
+
+<li>The JPEG support library from the
+<a href="http://www.ijg.org">Independent JPEG Group</a>
+
+<li>The <a href="http://www.libpng.org/pub/png/">libpng</a> library
+for PNG image file support.
+
+</ul>
+
+
+<h3>For Windows Systems</h3>
+
+
+
+
+<h4>Visual C++</h4>
+
+<p>A Visual C++ 6.0 workspace and accompanying project files are
+provided in the <tt>vc6</tt> directory.
+An older VC++ 5.0 workspace is available in the <tt>vc5</tt> directory.
+However, this is no longer in regular use and may be out of date.
+
+<h5>Manual Build</h5>
+
+<p>The library can also be built manually using the <tt>nmake</tt>
+command line tool.  A <tt>configure.bat</tt> batch file is provided
+which will set up the necessary configuration files.
+
+<p>To build the library manually, use the following process:
+<ol>
+<li><tt>configure.bat</tt>
+<li><tt>cd src</tt>
+<li><tt>nmake /f Makefile.vc</tt>
+</ol>
+
+
+<h4>Cygwin</h4>
+
+<p>The <tt>libgfx</tt> library will build properly under Windows with
+ the <a href="http://sourceware.cygnus.com/cygwin/">Cygwin</a>
+ toolset.  Simply follow the directions for <a href="#unix">Unix
+ systems</a>.
+
+
+
+
+<h3><a name="unix">For Unix Systems</a></h3>
+
+<p>The Unix build process relies on the GNU
+<a href="http://www.gnu.org/software/autoconf/autoconf.html">Autoconf</a>
+system to properly configure the software.
+
+<p>Once the required libraries are installed, you should be able to
+build the library using the following process:
+<ol>
+<li><tt>./configure</tt>
+<li><tt>cd src</tt>
+<li><tt>make</tt>
+</ol>
+If the support libraries are installed in a directory outside the default
+search path, you can invoke the <tt>configure</tt> script with the option
+<tt>--with-local[=dir]</tt> which will add "dir" to the search path.  The
+default local directory is <tt>/usr/local</tt>, but you can specify any
+directory of your choice.
+
+<h3><a name="macosx">For Mac OS X Systems</a></h3>
+
+<p>The current version of <tt>libgfx</tt> can be successfully compiled
+under Mac OS X, but it requires a bit of manual intervention.
+
+<p>First, you should install the FLTK library.  To build under Mac OS X,
+you must use version 1.1.0 or later.
+Next, you should follow the instructions for using the Autoconf
+script outlined in the <a href="#unix">directions for Unix systems</a>
+above.
+
+<p>This is sufficient to compile command-line programs.  However, GUI
+programs require a little extra work.  The typical GUI <tt>make</tt> rule looks
+like this:
+<pre>
+    gui-program: gui-program.cxx
+	    $(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS) -lgfx $(GUI_LIBS) -lm
+</pre>
+To work correctly with the Mac OS, you must add an additional step to
+this <tt>make</tt> rule:
+<pre>
+    gui-program: gui-program.cxx
+	    $(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS) -lgfx $(GUI_LIBS) -lm
+	    $(FLTKCONFIG) --post $@
+</pre>
+This uses the <tt>fltk-config</tt> script to add a standard resource
+fork to the compiled application.
+
+</body>
+
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: ex-gui.html,v 1.2 2000/09/07 02:57:34 garland Exp $ -->
+
+<!-- Based on ../tests/t-gui.cxx revision 1.3 -->
+
+<html>
+
+<head>
+<title>libgfx: Simple GUI Example Program</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+
+<style type="text/css">
+<!--
+pre { margin-left: 2em }
+-->
+</style>
+
+</head>
+
+<body>
+
+<h2>Simple GUI Example Program</h2>
+
+<p>This is a very simple program which uses the minimalist <a
+href="gui.html">GUI</a> facility provided by <tt>libgfx</tt>
+to create a window a draw a red square in it.  When first started, it
+presents the user with a window which looks like the one shown below.
+The full source code for this example application can be found in
+the file <tt>tests/t-gui.cxx</tt> in the <tt>libgfx</tt> source
+distribution.
+
+<p>
+<div align=center>
+<img src="gui-redbox.gif">
+</div>
+
+<h3>Setup</h3>
+
+<p>The program begins by including some of the standard
+<tt>libgfx</tt> headers.
+
+<pre>
+#include &lt;gfx/gfx.h&gt;
+#include &lt;gfx/gui.h&gt;
+#include &lt;gfx/gltools.h&gt;
+</pre>
+
+<p>The first step in using the <tt>libgfx</tt> GUI framework is to
+subclass the <tt>MxGUI</tt> class and override whatever handlers you
+want to write code for.  After defining the subclass, you must then
+create a <em>single</em> instance.  In this application, we override
+the handlers involved with drawing and mouse events.
+We also follow the recommended idiom of naming our derived subclass
+<tt>GUI</tt> and its lone instance <tt>gui</tt>.
+
+<pre>
+class GUI : public MxGUI
+{
+public:
+    float angle, opt_theta, center[2];
+    bool dragging;
+
+public:
+    <i>// Drawing-related handler methods</i>
+    virtual void setup_for_drawing();
+    virtual void draw_contents();
+    virtual void update_animation();
+
+    <i>// Mouse-related handler methods</i>
+    virtual bool mouse_down(int *where, int which);
+    virtual bool mouse_up(int *where, int which);
+    virtual bool mouse_drag(int *where, int *last, int which);
+};
+
+GUI gui;
+</pre>
+
+
+<h3>Application Entry Point</h3>
+
+<p><tt>MxGUI</tt> programs always use the <tt>main()</tt> procedure as
+their entry point, even on Windows systems.  This application follows
+the recommended sequence of actions
+<ol>
+<li>Initialize member variables defined by the <tt>GUI</tt> derived class.
+<li>Call <tt>gui.initialize()</tt> to parse the command line and
+create the application.
+<li>Customize the default application by changing labels, adding
+menus, etc.
+<li>And finally, call <tt>gui.run()</tt> to open the application
+window and begin the event loop.
+</ol>
+These four distinct phases are indicated in the program source by
+whitespace-separated blocks.
+
+<pre>
+main(int argc, char **argv)
+{
+    gui.opt_theta = 10.0f;
+    gui.angle = 0.0f;
+    gui.dragging = false;
+    gui.center[0] = gui.center[1] = 0.0f;
+
+    gui.initialize(argc, argv);
+
+    gui.toplevel->label("Simple GUI Example");
+
+    return gui.run();
+}
+</pre>
+
+<h3>Drawing-Related Handler Methods</h3>
+
+<p>Whenever our OpenGL drawing canvas is created, resized, or
+otherwise reconfigured, the <tt>setup_for_drawing()</tt> handler is
+invoked.  This is where you want to set up any graphics state that is
+the same for every frame.
+
+<pre>
+void GUI::setup_for_drawing()
+{
+    glClearColor(0.65f, 0.65f, 0.65f, 0.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+}
+</pre>
+
+
+<p>If the contents of the OpenGL canvas need to be redrawn, the
+<tt>draw_contents()</tt> handler is invoked.
+
+<pre>
+void GUI::draw_contents()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    <i>// Draw the black axes</i>
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+      glVertex2f(-1.0, 0.0);
+      glVertex2f(1.0, 0.0);
+      glVertex2f(0.0, -1.0);
+      glVertex2f(0.0, 1.0);
+    glEnd();
+    
+    glTranslatef(center[0], center[1], 0);
+    glRotatef(angle, 0, 0, 1);
+
+    <i>// Draw the red rectangle</i>
+    glEnable(GL_BLEND);
+    glColor4d(0.8, 0.15, 0.15, 0.85);
+    glBegin(dragging?GL_LINE_LOOP:GL_POLYGON);
+    glBegin(GL_POLYGON);
+      glVertex2f(-0.5, -0.5);
+      glVertex2f(-0.5, 0.5);
+      glVertex2f(0.5, 0.5);
+      glVertex2f(0.5, -0.5);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    glPopMatrix();
+}
+</pre>
+
+<p>The <tt>MxGUI</tt> framework provides a simplistic animation
+mechanism.  Whenever animation is activated --- the user controls this
+via a menu entry --- the event loop will periodically call the
+<tt>update_animation()</tt> handler.
+<pre>
+void GUI::update_animation()
+{
+    angle += opt_theta;
+}
+</pre>
+
+<h3>Mouse-Related Handler Methods</h3>
+
+<p>When the user clicks the left mouse button, we want to re-center
+the square around that position.  We use a call to the
+<tt>unproject_pixel()</tt> <a href="gl.html">utility function</a>
+to map the pixel location into a world-space coordinate.
+
+<pre>
+static bool center_on_click(float *ctr, int *where)
+{
+    double world[3];
+
+    unproject_pixel(where, world);
+    ctr[0] = (float)world[0];
+    ctr[1] = (float)world[1];
+
+    return true;
+}
+</pre>
+
+<p>Given the above code to center the rectangle on a click location,
+it is a simple matter to write our mouse handlers.  Whenever the
+left button is pressed or dragged, we recenter the rectangle.  We also
+maintain the value of <tt>gui.dragging</tt> to indicate whether the
+mouse is being dragged.  If it is, the <tt>draw_contents()</tt>
+handler will draw the rectangle as an outline rather than a filled box.
+
+<pre>
+bool GUI::mouse_down(int *where, int which)
+{
+    if( which==1 )
+    {
+	dragging = true;
+	return center_on_click(center, where);
+    }
+    else return false;
+}
+
+bool GUI::mouse_up(int *where, int which)
+{
+    dragging = false;
+    return (which==1);
+}
+
+bool GUI::mouse_drag(int *where, int *last, int which)
+{
+    if( which==1 )
+	return center_on_click(center, where);
+    else
+	return false;
+}
+</pre>
+
+</body>
+</html>

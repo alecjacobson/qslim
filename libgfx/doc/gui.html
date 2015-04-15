@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: gui.html,v 1.5 2002/03/11 21:15:37 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Minimalist GUI Framework</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Minimalist GUI Framework</h2>
+
+<p>All interactive graphics applications need to create some sort of graphical
+user interface.  While many applications may require a fairly sophisticated
+interface, there is a large class of applications which can be built with a
+very simple interface.  The <tt>libgfx</tt> library provides a framework to
+ease the construction of such simple interfaces.
+
+<p>The kind of application interface supported by the GUI framework is
+pictured in the following figure:
+<blockquote>
+<center><img src="gui-layout.gif"></center>
+</blockquote>
+
+The application window consists of three primary components:
+<ol>
+<li>A menu bar, which is managed by the GUI framework,
+<li>An OpenGL canvas window where the application is free to draw its content
+and receive user events such as mouse clicks, and
+<li>A status bar where the application can print text messages.
+</ol>
+
+<p>The <a href="ex-gui.html">code for the application pictured
+above</a> provides a concrete example of using this GUI framework.
+
+<h3>Creating a GUI Application</h3>
+
+<p>To begin building your GUI application, you'll need to include the GUI
+framework header:
+<pre>
+    #include &lt;gfx/gui.h&gt;
+</pre>
+The framework itself is packaged as a C++ class named <tt>MxGUI</tt>.
+You create your application by subclassing it and overriding various virtual
+methods.  You can then create a single instance of this class, which will
+represent your application.
+For consistency, it is recommended that you name
+the derived subclass <tt>GUI</tt> and its instance <tt>gui</tt> as in the
+following:
+<pre>
+    class GUI : public MxGUI
+    {
+    public:
+        <i>// Application variables and methods</i>
+
+    public:
+	<i>// Override virtual methods to handle events</i>
+    };
+
+    GUI gui; <i>// Create application instance</i>
+</pre>
+
+<p>Programs based using this framework always use the <tt>main()</tt>
+procedure as their entry point, <em>even on Windows systems</em>.
+Inside this main procedure, you should perform this general sequence of
+operations:
+<ol>
+<li>Initialize global variables and member variables defined in the
+<tt>GUI</tt> class.
+<li>Call the <tt>gui.initialize()</tt> procedure to parse the command line and
+create the application.
+<li>Customize the default application by changing labels, adding menus, etc.
+<li>Call <tt>gui.run()</tt> to open the application window and begin the event
+loop.
+</ol>
+
+<p>The <tt>MxGUI::initialize</tt> method must be called to initialize the GUI
+framework.
+<pre>
+    virtual void initialize(int argc, char **argv,
+			    Fl_Menu_Item *layout=NULL, int xw=640, int yw=480);
+</pre>
+You should pass to it the <tt>argc</tt> and <tt>argv</tt> command-line
+variables as passed into <tt>main()</tt>.  The framework will take care of
+parsing the command-line and calling the appropriate handlers.
+The optional <tt>layout</tt> argument can be used to specify an initial menu
+structure; the default value of <tt>NULL</tt> directs the framework to use the
+default menu layout.
+The optional <tt>xw</tt> and <tt>yw</tt> arguments specify the desired width
+and height (in pixels) of the OpenGL canvas.
+
+<h4>Command-Line Processing</h4>
+
+<p>
+The <tt>MxGUI</tt> framework uses the FLTK
+<a href="http://www.fltk.org/doc-1.0/functions.html#args"><tt>Fl::args</tt></a>
+facility to parse the command line passed to <tt>MxGUI::initialize()</tt>.
+For each option on the command line, it invokes the following handler:
+<pre>
+    virtual int cmdline_option(int argc, char **argv, int& index);
+</pre>
+The <tt>argc</tt> and <tt>argv</tt> values are the complete array originally
+passed to <tt>initialize()</tt>.  The <tt>index</tt> argument indicates which
+element of <tt>argv</tt> contains the current switch being processed.
+This <tt>index</tt> variable is passed by reference to allow the handler to
+consume additional elements of <tt>argv</tt> by incrementing <tt>index</tt>.
+The handler should return <tt>1</tt> if it handled the switch and <tt>0</tt>
+otherwise.
+
+<p>Once all options have been processed, the initialization code invokes the
+following handler for each file listed on the command line.
+<pre>
+    virtual void cmdline_file(const char *file);
+</pre>
+If no files are specified this handler will be invoked with a <tt>NULL</tt>
+value.
+
+<h4>Drawing</h4>
+
+<p>The <tt>MxGUI</tt> framework uses two virtual methods to control drawing in
+the OpenGL canvas.  The first of these is:
+<pre>
+    virtual void setup_for_drawing();
+</pre>
+This method is called whenever the canvas has been reconfigured.  Primarily,
+this occurs when the canvas has either just been shown on the screen (e.g.,
+after creation) or when it has been resized.
+
+<p>Whenever the canvas needs to be repainted, the framework will invoke the
+handler:
+<pre>
+    virtual void draw_contents();
+</pre>
+You should override this method and place all your drawing code in it.
+
+
+<h4>Handling Mouse Events</h4>
+
+<p>Interactive applications will typically want to receive mouse events taking
+place on the OpenGL canvas.  The framework classifies mouse events into three
+types:
+<ol>
+<li><strong>Button down:</strong>
+	the user has depressed a mouse button
+<li><strong>Button up:</strong>
+	the user has released a previously depressed button
+<li><strong>Drag:</strong>
+	the user is moving the mouse with a button depressed
+</ol>
+When one of these events occur, the corresponding event handler will be
+invoked:
+<pre>
+    virtual bool mouse_down(int *where, int which);
+    virtual bool mouse_up(int *where, int which);
+    virtual bool mouse_drag(int *where, int *last, int which);
+</pre>
+The <tt>where</tt> argument is a 2-D array containing the pixel location in
+the OpenGL canvas at which the mouse was pointing when the event occurred.
+The number of the button involved (either 1, 2, or 3) is passed in the
+<tt>which</tt> argument.
+To simplify drag operations, that event handler is also passed the location of
+the <tt>last</tt> received drag event.
+
+<p>All of these mouse handlers should return <tt>true</tt> if the canvas
+should be redrawn in response to the event just handled.  If the canvas does
+not need to be updated, they should return <tt>false</tt>.
+
+<h4>Handling Key Presses</h4>
+
+<p>Key press events can be received through the virtual function:
+<pre>
+    virtual bool key_press(int key);
+</pre>
+The return value of this function indicates whether the key press event
+was consumed by the handler.  You should make sure to return
+<tt>false</tt> if you do not use the given key, otherwise keyboard
+accelerators for the menu bar will no longer function correctly.
+
+<p>Note that FLTK defines
+<a
+    href="http://www.fltk.org/doc-1.0/enumerations.html#key_values">symbolic
+    names</a> for non-ASCII keys.  You can also query the state of the
+modifier keys using the <tt><a href="http://www.fltk.org/doc-1.0/enumerations.html#13_6">Fl::event_state()</a></tt> function.
+
+<h4>Animation</h4>
+
+<p>A very simple mechanism for supporting animation is also provided by the
+framework.  To take advantage of this, first set the <tt>MxGUI</tt> instance
+variable
+<pre>
+    float default_fps;
+</pre>
+to the desired number of frames per second (defaults to 24).  The method
+<pre>
+    void animate(bool will);
+</pre>
+can then be used to start and stop animation.
+The system works by setting a system timer to go off every 1/fps of a second.
+When that timer goes off, the framework will call the handler
+<pre>
+    virtual void update_animation();
+</pre>
+so that the application can update its state appropriately, after which the
+framework will invoke the <tt>draw_contents()</tt> handler to repaint the
+canvas.  Note that this system makes no effort to guarantee a consistent
+update rate.
+
+<p>The default menu bar contains items to toggle animation on and off and to
+set the desired <tt>default_fps</tt> value.
+
+
+<h3>The Menu Bar</h3>
+
+<p>Many GUI applications use menu systems to provide the user control over the
+application.  By default, the <tt>MxGUI</tt> framework creates a very simple
+menu layout for its applications.  This standard menu provides basic features
+such as saving a snapshot of the OpenGL canvas to an image file, toggling
+animation, and setting the size of the display canvas.
+However, the application also has complete freedom to customize the menu
+system.
+
+<h4>Static Menu Layouts</h4>
+
+<p>The <tt>initialize()</tt> method accepts an optional argument which
+specifies the layout of the menu system.  This layout is an array of <a
+href="http://www.fltk.org/doc-1.0/Fl_Menu_Item.html">Fl_Menu_Item</a> elements,
+whose format is described in the <a
+href="http://www.fltk.org/doc-1.0/Fl_Menu_Item.html">FLTK documentation</a>.
+Passing a menu layout to <tt>initialize()</tt> will completely replace the
+default menu structure.
+
+<h4>Adding Menus at Run Time</h4>
+
+<p>Once an initial menu system has been created, either the default or an
+application-specific one, additional items can be added at run time.  To do
+this, you can invoke the <a
+href="http://www.fltk.org/doc-1.0/Fl_Menu_.html#Fl_Menu_.add"><tt>add()</tt></a>
+method of the <tt>MxGUI::menu_bar</tt> object.
+
+
+<h3>The Status Bar</h3>
+
+<p>The status bar at the bottom of the GUI application can be used to display
+short textual messages to the user.
+You can use the following method to print text in the status bar:
+<pre>
+    int status(const char *fmt, ...);
+</pre>
+It accepts argument lists of exactly the same form as the <tt>printf</tt>
+function of the C standard library.
+
+</body>
+</html>

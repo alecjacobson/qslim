@@ -1,0 +1,206 @@
+------------------------------------------------------------------------
+		     QSlim Surface Simplification
+			     Version 2.1
+			     July 4, 2004
+
+		 Michael Garland <garland@uiuc.edu>
+
+
+ Copyright (C) 1998-2002 Michael Garland.  See "COPYING.txt" for details.
+
+
+ For the latest version and up-to-date information, please visit
+ http://www.uiuc.edu/~garland/software/qslim.html
+
+
+ Michael Garland
+ Department of Computer Science
+ University of Illinois at Urbana-Champaign
+ 201 North Goodwin Avenue
+ Urbana, IL 61801
+
+------------------------------------------------------------------------
+
+
+This is version 2.1 of my QSlim surface simplification package.  The
+underlying simplification algorithm should perform essentially the same as
+version 2.0.  However, various features (particularly the GUI) have been
+updated and some bugs have been fixed.  This software package has now been
+fairly stable for over a year.  Consequently, this is likely the last release
+of the QSlim software.
+
+RUNNING QSLIM
+-------------
+
+The standard QSlim executable is a non-interactive program called
+'qslim' which you invoke using a command of the form:
+
+	qslim <options> <filename>
+
+This will input the initial model from the specified file and simplify
+it.  When simplification is complete, it will output the resulting
+model and report to you how long the process took.
+
+The command line options recognized by QSlim are:
+
+
+  Controlling output:
+
+	-t <n>
+
+		Specify the desired number of faces in the simplified
+		model.  You are not guaranteed to get exactly the
+		number you ask for, but it should generally be within
+		1-2 faces of the target.
+
+	-o <file>
+
+		Output resulting model to the named file.  By default,
+		the simplified model is sent to standard output.
+
+	-M <format>
+
+		Select the format for the output model.  The supported
+		formats are:
+
+		   smf -- This is the default format
+		   iv  -- Inventor format (preliminary support only)
+		   vrml -- VRML 1.0 format (preliminary support only)
+
+		   pm, mmf, log -- These are formats which I developed
+		   for experimenting with multiresolution
+		   representations.  They're not documented because
+		   they're not well supported and I may substantially
+		   alter the format of these files in the future.
+
+	-q
+
+		Run quietly.  QSlim will not output the usual status
+		information.
+
+
+  Customizing simplification:
+
+	-O <n>
+
+		Specify the policy for selecting the target position
+		for edge contractions.  The following levels of
+		optimization are available:
+
+			3 -- Pick point which minimizes error [default].
+			2 -- Pick best point along edge.
+			1 -- Pick best of endpoints or midpoint.
+			0 -- Pick best of the two endpoints.
+
+	-B <weight>
+
+		Specifies the weight assigned to boundary constraint
+		planes.  The default value is currently 1000.  Specify
+		a weight of 0 to disable boundary constraints entirely.
+
+	-W <n>
+
+		Select the quadric weighting policy.  Available policies
+		are:
+
+			0 -- Weight all quadrics uniformly
+			1 -- Weight by area of contributing triangle [default]
+			2 -- Weight by angle around vertex
+
+
+  Miscellaneous features:
+
+	-r
+
+		Enable history recording.  This is not terribly useful
+		in the command-line version.  However, in the
+		interactive version (see below) this will enable you
+		to simplify a model and then back up to a previous
+		level of detail.  NOTE:  This will cause the program
+		to use more memory.
+
+	-j
+
+		Only perform contractions that do not remove any
+		faces.  You can use this feature in conjunction with
+		custom edge sets (see below) to effect a form of
+		stitching.  This is not terribly reliable, it's just
+		an experimental feature.
+
+	-F
+
+		This will cause the simplification algorithm to use
+		iterative face contraction rather than iterative edge
+		contraction.  Generally speaking, this has the
+		following effects:
+
+			- Simplification is faster
+			- Less memory is consumed
+			- Geometric quality of the results is reduced
+
+
+	-I <file>
+
+		Include a script file.  I've been toying around with
+		adding some simple scripting support to QSlim using
+		the MxAsp MixKit package.  Currently, there is nothing
+		useful to do with this, but there may be in the
+		future.
+
+
+RUNNING QVIS
+------------
+
+Use the mouse to control the position of the model/camera.
+
+    Left button:    spins the model
+    Right button:   moves the camera in and out
+    Middle button:  moves the camera in the image plane
+
+Use the menu bar to simplify the model, snapshot pictures of it, and control
+the rendering style.  You can also use the slider bar at the bottom of the
+window to simplify the model.
+
+NOTE: Drawing quadrics can really slow things down on lower-end
+machines.
+
+
+SPECIFYING EDGE SETS
+--------------------
+
+In normal operation, the simplification algorithm collects together
+all the edges of the model and it iteratively selects the best edge to
+contract from amongst this set.  However, you can select your own set
+of edges.  Simply add lines of the form:
+
+	e <v1> <v2>
+
+To the input data.  Each 'e' command will specify that the pair v1,v2
+should be considered as an edge for simplification.  Aside from the
+edges you specify, no other edges will be considered.
+
+One sample use of this feature is to restrict to set of edges the
+algorithm considers.
+
+A more interesting application is to list all the edges of the model
+and then include a set of non-edge pairs or virtual edges.  QSlim 1.0
+allowed you to specify a distance threshold which would be used in
+automatically selecting a set of non-edge pairs to be considered
+during simplification.  The primary reason for this functionality was
+to allow separate components of the model to be aggregated together.
+Support for such virtual edges is no longer directly a part of QSlim.
+Instead, you can specify any arbitrary set of vertex pairs you like.
+
+
+SUPPORT FOR SURFACE ATTRIBUTES
+------------------------------
+
+I have extended the fundamental quadric simplification algorithm to
+support surfaces with vertex attributes (e.g., RGB color, texture
+coordinates).  Support for this algorithm is provided by the
+MxPropSlim MixKit module.
+
+Attribute simplification has not yet been incorporated directly into
+the main QSlim executable.  However, in the '../../examples' directory
+you will find the 'propslim' program which provides a very simple
+front-end interface.

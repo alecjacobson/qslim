@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: raster.html,v 1.2 2000/09/05 17:28:52 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Raster Images</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Raster Images</h2>
+
+<p>The <tt>libgfx</tt> library provides very basic support for storing raster
+image data.  This is not really intended to provide the kind of support
+necessary for advanced image processing, but rather the basic functionality
+needed for saving screen snapshots, loading texture files, etc.  To use this
+package you will first need to include the header file
+<pre>
+    #include &lt;gfx/raster.h&gt;
+</pre>
+
+<h3>Image Representation</h3>
+
+<p>Images are implemented using the <tt>Raster&lt;T&gt;</tt> template class.
+The templated type <tt>T</tt> determines how individual pixel values are
+stored.  There are two standard image types:
+<ul>
+<li><tt>ByteRaster</tt>:
+pixel components are represented with values of type <tt>unsigned
+char</tt>
+
+<li><tt>FloatRaster</tt>:
+pixel components are represented with values of type <tt>float</tt>
+</ul>
+
+<h4>Allocating an Image</h4>
+
+<p>When allocating an image, you must specify its three dimensions: (1) width
+in pixels, (2) height in pixels, and (3) number of channels.
+<pre>
+    Raster&lt;T&gt;(int width, int height, int nchannels);
+</pre>
+Typically, the number of channels should by either 1 for grayscale images, 3
+for RGB color images, or 4 for RGB images with an alpha channel.
+
+<h4>Accessors</h4>
+
+<p>The dimensions of an image can be determined through a standard set of
+accessor functions:
+<pre>
+    int width();      <i>// Width of image (in pixels)</i>
+    int height();     <i>// Height of image (in pixels)</i>
+    int channels();   <i>// Number of channels in image</i>
+    int length();     <i>// Total number of pixel values</i>
+</pre>
+The width, height, and channel count values are merely those specified when
+the image is allocated.  The length of the image is the total number of pixel
+elements (i.e., width*height*channels).
+
+<p>Pixel elements can be accessed in two different ways.  First of all, you
+can get a pointer to the single pixel at the image location (i,j) by calling
+the method
+<pre>
+    T  *pixel(int i, int j);
+</pre>
+This is the standard way to access pixels.  Alternatively, you can access
+pixel elements using the standard C [] bracket notation.  This method is
+generally discouraged since it exposes the underlying layout of the image.
+However, it can be useful if you want to visit every pixel element without
+regard to its location.
+
+
+<h4>Pixel Manipulation</h4>
+
+<p>The <tt>Raster</tt> template class provides some very simple methods for
+manipulating the image which it stores.  They are:
+<pre>
+    void hflip();   <i>// Flip the image from left to right</i>
+    void vflip();   <i>// Flip the image from top to bottom</i>
+</pre>
+
+
+<h3>Input/Output of Image Files</h3>
+
+<p>In addition to internal image representation, this package provides a
+simple set of functions for reading and writing external image files.
+The library supports the following image types:
+<ul>
+<li>PNM (supported internally)
+<li>TIFF (requires <a href="http://www.libtiff.org">libtiff</a>)
+<li>JPEG (requires <a href="http://www.ijg.org">jpeglib</a>)
+<li>PNG (requires <a href="http://www.libpng.org/pub/png/">libpng</a>)
+</ul>
+
+<p>Images can be read from files using the following functions:
+<pre>
+    ByteRaster *read_pnm_image(const char *filename);
+    ByteRaster *read_tiff_image(const char *filename);
+    ByteRaster *read_png_image(const char *filename);
+    ByteRaster *read_jpeg_image(const char *filename);
+</pre>
+These functions return <tt>NULL</tt> if the file could not be read.  This
+includes the case when the required external libraries are not available.
+Similar functions can be used to write images to files:
+<pre>
+    bool write_pnm_image(const char *filename, const ByteRaster&);
+    bool write_tiff_image(const char *filename, const ByteRaster&);
+    bool write_png_image(const char *filename, const ByteRaster&);
+    bool write_jpeg_image(const char *filename, const ByteRaster&);
+</pre>
+They return <tt>true</tt> or <tt>false</tt> indicating whether the output
+operation succeeded or not.
+
+<p>The PNM output routines can output both raw (i.e., binary) and ASCII image
+files.  Which type of file they write is controlled by the global variable
+<pre>
+    bool will_write_raw_pnm;
+</pre>
+Since JPEG is a lossy compression format, the behavior of the JPEG output
+routines is dependent upon the global variable controlling image quality
+<pre>
+    int jpeg_output_quality;
+</pre>
+These quality factors are integers ranging from 0-100 (with 100 being the
+highest quality).  See the <tt>jpeglib</tt> documentation for further details.
+
+<p>For convenience, you can read/write image files with the functions
+<pre>
+    bool write_image(const char *filename, const ByteRaster&, int type=-1);
+    ByteRaster *read_image(const char *filename, int type=-1);
+</pre>
+The file format will be inferred from the filename, unless the optional
+<tt>type</tt> argument is given.  The image type should be one of
+<tt>IMG_PNM</tt>, <tt>IMG_PNG</tt>, <tt>IMG_TIFF</tt>, or <tt>IMG_JPEG</tt>.
+
+
+</body>
+
+</html>

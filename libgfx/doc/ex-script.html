@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: ex-script.html,v 1.4 2001/10/10 00:38:28 garland Exp $ -->
+
+<!-- Based on ../tests/t-script.cxx revision 1.6 -->
+
+<html>
+
+<head>
+<title>libgfx: Simple Scripted Program</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+
+<style type="text/css">
+<!--
+pre { margin-left: 2em }
+-->
+</style>
+
+</head>
+
+<body>
+
+<h2>Simple Scripted Program</h2>
+
+<p>This program demonstrates some of the basic features provided by the
+<tt>libgfx</tt> <a href="script.html">scripting package</a>.  Given a list of
+file names on the command line, it reads each of them in turn and executes the
+scripting commands contained within them.
+
+<h3>Setup and Initialization</h3>
+
+<p>The program begins by including the headers for the <tt>libgfx</tt> modules
+which it uses:
+<pre>
+#include &lt;gfx/gfx.h&gt;
+#include &lt;gfx/script.h&gt;
+#include &lt;gfx/vec3.h&gt;
+</pre>
+
+<p>The <tt>main()</tt> application entry point performs a very simple task.
+It creates a scripting environment (<tt>class CmdEnv</tt> and registers a set
+of scripting commands.  Once these handlers have been installed, 
+it loops over every file name specified on the command line and executes it as
+a script.
+<pre>
+main(int argc, char *argv[])
+{
+    CmdEnv env;
+
+    env.register_command("add", proc_add);
+    env.register_command("avg", proc_add);
+    env.register_command("echo", proc_echo);
+    env.register_command("vec3", proc_vec3);
+
+    for(int i=1; i&amp;argc; i++)
+	script_do_file(argv[i], env);
+
+    return 0;
+}
+</pre>
+
+<h3>Command Procedures</h3>
+
+<p>Every scripting command is handled by some command procedure.  The
+registration code above binds the actual procedures to the names of their
+scripting commands.  Then, whenever a given command occurs in a script being
+processed, the corresponding handler is invoked.
+
+<p>The first command procedure actually implements two scripting commands:
+<tt>add</tt> and <tt>avg</tt>.  It determines which command has been invoked
+by examining its <tt>name</tt> argument.
+It treats its command line as a whitespace-separated sequence of numbers,
+either adds or averages all of them, and then prints the result.
+<pre>
+int proc_add(const CmdLine &amp;cmd)
+{
+    double sum = 0.0;
+    int count;
+
+    std::vector&lt;double&gt; values;
+    cmd.collect_as_numbers(values);
+    for(count=0; count&lt;values.size(); count++)
+	sum += values[count];
+
+    if( cmd.opname() == "avg" &amp;&amp; count&gt;0 )
+	sum /= (double)count;
+
+    cout &lt;&lt; sum &lt;&lt; endl;
+    return SCRIPT_OK;
+}
+</pre>
+
+<p>This next procedure requires precisely 3 numeric arguments, from which it
+constructs a 3-D vector using the <tt>Vec3</tt> class.  If the number of
+arguments is not 3, it returns a value indicating a syntax error occurred.
+<pre>
+int proc_vec3(const CmdLine &amp;cmd)
+{
+    if( cmd.argcount() != 3 )  return SCRIPT_ERR_SYNTAX;
+
+    Vec3 v;
+    cmd.collect_as_numbers(v, 3);
+
+    cout &lt;&lt; v &lt;&lt; endl;
+    return SCRIPT_OK;
+}
+</pre>
+
+<p>Finally, the <tt>echo</tt> procedure does not interpret its arguments at
+all.  Instead, it simply prints the entire argument line as is.
+<pre>
+int proc_echo(const CmdLine &amp;cmd)
+{
+    cout &lt;&lt; cmd.argline() &lt;&lt; endl;
+    return SCRIPT_OK;
+}
+</pre>
+
+<h3>Sample Execution</h3>
+
+<p>To demonstrate the action of this sample program, here is a particularly
+simple script.
+<pre>
+# This is a test script meant to be fed to t-script.  It is not meant as an
+# exhaustive test, but mainly as a demonstration.
+
+echo The following sum should be 15
+add 1 2 3 4 5
+
+echo
+echo The following average should be 3.5
+avg 3 8 2 1
+
+echo
+echo The following is the vector [1 0 0]
+vec3 1 0 0
+</pre>
+
+<p>When given to the sample program, it produces the following output
+<pre>
+The following sum should be 15
+15
+
+The following average should be 3.5
+3.5
+
+The following is the vector [1 0 0]
+1 0 0
+</pre>
+
+</body>
+</html>

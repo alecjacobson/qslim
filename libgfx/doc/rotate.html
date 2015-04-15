@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: rotate.html,v 1.2 2002/03/11 21:17:15 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Interactive Rotation Control</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Interactive Rotation Control</h2>
+
+<p>The <tt>libgfx</tt> library provides a fairly simple facility for
+interactive inspection of 3-D objects.  The interface is designed
+for applications where a user is inspecting an object by spinning it and
+by translating the camera to provide a better view.  All of the user
+interaction is implemented through mouse motion:
+<ul>
+    <li>Left mouse drag &mdash; rotate object about its centroid
+    <li>Right mouse drag &mdash; translate camera forward/backward
+    <li>Middle mouse drag &mdash; translate camera parallel to image plane
+</ul>
+
+<p>The classes used to implement this functionality are based on a
+fairly standard paradigm.  Two subsequent mouse positions are projected
+onto a notional surface "below" the window.  The cross product of these
+projected vectors defines an axis of rotation and the angle between them
+defines the rotation angle.
+
+<h3>Ball Types</h3>
+
+<p>The library currently supports two control classes:
+
+<blockquote>
+
+<p><b>Arcball</b>&nbsp;&nbsp;The Arcball controller is based on the
+article <i>Arcball Rotation Control</i> written by Ken Shoemake in
+<i>Graphics Gems IV</i> published by Academic Press.
+The underlying surface of projection is a hemisphere.
+
+<p><b>Trackball</b>&nbsp;&nbsp;Implements the mechanism used in the SGI
+3-D demo programs.  This approach was originally developed by Gavin
+Bell.  The underlying surface of projection is a hybrid of a hemisphere
+and a hyperbolic sheet.
+</blockquote>
+
+<h3>Public Interface</h3>
+
+<p>The two controller types both implement the same public interface,
+and can be freely interchanged in the application program.  The
+interfaces for these controllers are defined in the following header
+files:
+<ul>
+    <li><tt>class Arcball</tt> &mdash; <tt>&lt;gfx/arcball.h&gt;</tt>
+    <li><tt>class Trackball</tt> &mdash; <tt>&lt;gfx/trackball.h&gt;</tt>
+</ul>
+To use one of the controllers, you need to include the appropriate
+header and create an instance of the appropriate class.
+
+<h4>Initialization</h4>
+
+<p>Before using a rotation controller, you must initialize it by
+providing the bounding sphere of the object to be controlled.  This is
+done using the templated method:
+<pre>
+    template&lt;class T&gt;
+    void bounding_sphere(const TVec3&lt;T&gt;&amp; center, T radius);
+</pre>
+The specified sphere <tt>center</tt> will be the point about which the
+object will rotate.
+
+<h4>Interaction</h4>
+
+<p>Once initialized, the controller is meant to be interfaced directly
+with the event handlers of an application built using the
+<tt>libgfx</tt> <a href="gui.html">GUI framework</a>.
+Each of the following controller methods should be called from the event
+handlers of your application.
+<pre>
+    virtual void update_animation();
+    virtual bool mouse_down(int *where, int which);
+    virtual bool mouse_up(int *where, int which);
+    virtual bool mouse_drag(int *where, int *last, int which);
+</pre>
+
+<h4>Applying Results</h4>
+
+<p>For the rotation to take effect, you must apply it in the rendering
+loop of the application.  Before drawing your scene, you should call the
+method:
+<pre>
+    virtual void apply_transform();
+</pre>
+This will set up the appropriate transform on the <tt>ModelView</tt>
+matrix stack.  Similarly, when done drawing, you should call the method:
+<pre>
+    virtual void unapply_transform();
+</pre>
+which will clean up the <tt>ModelView</tt> matrix stack.
+
+</body>
+
+</html>

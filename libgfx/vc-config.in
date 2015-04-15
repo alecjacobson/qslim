@@ -1,0 +1,41 @@
+
+# The variables above:
+#   LOCAL -- Location of FLTK, libtiff, etc.
+#   LIBGFX -- Location of libgfx directory
+
+########################################################################
+
+# Load the standard Microsoft makefile macros
+!include <win32.mak>
+
+CC = cl /nologo
+CXX = cl /nologo
+LINK = link /nologo
+
+# This is the complete list of Win32 libraries.  We only need a subset
+# of them.
+# 
+# WIN_LIBS =  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
+#             advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib \
+#             odbc32.lib odbccp32.lib 
+
+WIN_LIBS = $(winlibs)
+IMG_LIBS = libtiff_d.lib libpng_d.lib libjpeg_d.lib
+GL_LIBS = opengl32.lib glu32.lib
+GUI_LIBS = $(IMG_LIBS) fltk_d.lib wsock32.lib $(GL_LIBS) $(WIN_LIBS)
+
+BASEFLAGS = $(cflags) $(cdebug) $(cvars) /MLd -D "_DEBUG" \
+            -I "$(LIBGFX)/include" -I "$(LOCAL)/include"
+
+CFLAGS = $(BASEFLAGS) 
+CXXFLAGS = $(BASEFLAGS) /GX
+LDFLAGS = /libpath:"$(LOCAL)/lib" /libpath:"$(LIBGFX)/src"
+
+.SUFFIXES:
+.SUFFIXES: .c .cc .cxx .obj
+
+.c.obj:
+        $(CC) /c $(CFLAGS) $<
+
+.cxx.obj:
+        $(CXX) /c $(CXXFLAGS) $<

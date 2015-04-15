@@ -1,0 +1,33 @@
+#! /bin/sh
+
+if test -z "$LOCAL"; then
+    LOCAL=$HOME
+fi
+
+CC="cc -n32"
+CXX="CC -n32"
+export CC
+export CXX
+
+
+CFLAGS="-O2"
+CXXFLAGS="-O2"
+# -fullwarn with this compiler gets us a *load* of notes
+SITE_CFLAGS="-mips3 -xansi"
+SITE_CXXFLAGS="-MDupdate Makefile.dep ${SITE_CFLAGS}"
+SITE_LDFLAGS="-mips3"
+
+# Must use mips3 instead of mips4 to maintain support of R4K-series boxes
+
+export CFLAGS
+export CXXFLAGS
+export SITE_CFLAGS
+export SITE_CXXFLAGS
+export SITE_LDFLAGS
+
+XF="--with-xformslib=${LOCAL}/lib32 --with-xformsincl=${LOCAL}/include"
+
+# Don't use Facilities's X libraries!
+X="--x-includes=/usr/include --x-libraries=/usr/lib32"
+
+./configure $X $XF --enable-safety=0 $*

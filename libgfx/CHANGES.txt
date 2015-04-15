@@ -1,0 +1,208 @@
+in Version 1.0.2
+----------------
+
+    o The MxGUI::snapshot_to_file() method now takes an optional
+      filename argument.  When provided, the code will simply write a
+      snapshot to this file, rather than presenting the user with a file
+      selector.
+
+    o The MxGUI::snapshot_to_file() method will now save the alpha
+      channel of the window, assuming the file format supports that.
+      (Currently, only PNG and TIFF support alpha channels.)
+
+    o MxGUI OpenGL windows allocate alpha channels (when available).
+
+    o New vector/matrix modules: 
+
+	- <gfx/symmat4.h>   Symmetric 4x4 matrices; after <gfx/symmat3.h>
+
+    o Project files for Apple's ProjectBuilder (OS X) are located in the
+      macos subdirectory.
+
+    o Added checks in the autoconf script for <ext/hash_map> and
+      <ext/hash_set>, which is where GCC3 chooses to place these
+      non-standard STL components.
+
+    o The scripting framework now supports a CmdEnv::ignore_command()
+      method that lets client code specify command names that should be
+      ignored.  This is also available from the input file itself by
+      using the 'ignore' command.
+
+    o The Baseball-derived classes now have read()/write() methods for
+      exchanging view information in a textual form.
+
+
+in Version 1.0.1
+----------------
+
+    o The library should now compile correctly under Visual Studio .NET
+      (a.k.a Visual C++ 7).
+
+    o The array<> and varray<> templates in <gfx/array.h> have been
+      removed.  Their original purpose was to support legacy code
+      written in prior to the widespread adoption of STL.  The array2<>
+      and array3<> templates remain, but they are now subclasses of
+      std::vector<>.
+
+    o Many of the functions in <gfx/geom3d.h> were re-written to by
+      templatized by vector class rather than by element type.  Thus,
+      they may now be used with any suitable vector type, not just the
+      TVec3<> template defined in <gfx/vec3.h>.
+
+    o The CmdLine::collect_as_xxx() methods used by the file format
+      scripting interface now accept an optional 'offset' argument.
+      This parameter controls at which token the methods start reading.
+      Their previous behavior was to always begin reading at the first
+      token on the command line.
+
+    o The script_do_xxx() functions have been replaced with
+      CmdEnv::do_xxx() methods.  The old global functions remain in
+      place for compatibility, but the new CmdEnv methods should be used
+      in preference to them.
+
+    o The autoconf process now sets up a symbolic FLTKCONFIG program
+      name.  This is primarily of interest under MacOS X, where the
+      fltk-config program is used to finalize the build of a GUI
+      application so that it will launch correctly from the Finder.
+      The Makefile in the 'test' directory demonstrates the correct use
+      of this program as a post-build step.
+
+    o Bug fixes:
+
+	- The Raster destructor is now correctly declared as virtual.
+
+	- Certain type declarations have been made more rigorously
+	  correct for proper compilation under GCC 3.
+
+    o A geom4d package has been added that provides functionality
+      analogous to the geom3d package.
+
+    o A couple of new experimental packages have been added for building
+      Win32 interfaces with MFC: mfc, wintools, gui-mfc.  They are
+      unfinished, undocumented, and may be unstable.  Most users of this
+      library will want to avoid them.
+
+
+in Version 1.0
+----------------
+
+    o The documentation is now (mostly) complete and (mostly)
+      synchronized with the actual code.
+
+    o Trackball & Arcball now share a common Baseball base class.
+
+    o Extensions to the autoconf script to allow for:
+
+	- Automatic configuration under Mac OS X
+
+	- Selection of whether to compile with Cygwin libraries or not
+
+	- Handle differences between FLTK 1.0.x and 1.1.x in the way
+	  that OpenGL code is handled
+
+    o Some minor changes to make the library compile under Mac OS X.
+
+    o Bug fixes:
+
+	- ByteRaster copy constructer faulted due to incorrect size
+	  computation for memcpy().
+
+in Version 0.9.3
+----------------
+
+    o Even more significant changes in the file format scripting package.  The
+      old approach was getting increasingly unmanageable, and the reliance on
+      magic global constructors for handler registration was proving to be
+      problematic.
+
+    o Added descriptive interface to vector/matrix types to make
+      templates easier to write.
+
+    o Vector templates now handle assignment between vectors of
+      different types (e.g., Vec3 and Vec3f) much more cleanly.
+
+    o New packages to efficiently support symmetric matrix types
+    (e.g., <gfx/symmat3.h>).
+
+    o Added is_inside_bbox() and clamp_to_bbox() to geom3d package.
+
+    o More complete documentation.
+
+    o Bug fixes in various packages:
+    
+	- fixed autoconf script to correctly detect headers
+
+	- Raster class now uses delete[] to match its use of new[].
+
+	- Scalar multiplication of vectors under VC++ must now use
+	  constants of the same type as the vector elements.  This
+	  prevents a tricky bug related to the VC++ template
+	  instantiation.
+
+
+in Version 0.9.2
+----------------
+
+    o Significant changes to the file format scripting package.  All previous
+      global functions are still available for backwards compatibility, but
+      you may need to change the definitions of your command handlers.
+
+    o The interface of the <geom3d> package has changed considerably
+
+	- Changed the triangle_* functions to be inlined templated functions.
+	  Before they only worked with Vec3's.  Now, they'll work with any
+	  TVec3<T> type.
+
+	- Added a templated compute_bbox() function.
+    
+    o Camera and object control has changed a bit
+
+	- The camera_lookat() function in the <gltools> package was putting
+	  both the perspective and lookAt transformations on the Projection
+	  stack.  It now correctly puts the perspective on the Projection
+	  stack and the lookAt transformation on the ModelView stack.
+
+	- The Arcball and Trackball manipulators now apply all transformations
+	  to the object, rather than applying rotation to the object and
+	  translation to the camera.
+    
+    o Added eigenvalue/eigenvector functions for all matrix types.
+
+	- Because of licensing restrictions, only the 2x2 implementation is
+	  actually present, although prototypes exist for all dimensions.
+
+    o Added a restricted STL-like interface to <array> package.
+    
+    o Bug fixes in various packages
+
+	- The 2x2 matrix inversion method was incorrect.
+
+	- read_tiff_image() always returned a 3-channel image.  It will now
+	  return an image with the same number of channels as in the file
+	  read.
+
+
+in Version 0.9.1
+---------------
+
+    o Added a new quaternion package <gfx/quat.h>. [currently undocumented]
+
+    o Added Trackball & Arcball interactive rotation control packages.  This
+      makes it much easier to write applications where the user interactively
+      spins a model in the window. [currently undocumented]
+
+    o Bug fixes in various packages.
+
+	- Vec3, Vec4 operators for Visual C++ were broken.
+	- Fixed improper deallocation of array2<> and array3<> objects.
+	- camera_lookat() incorrectly computed camera location.
+
+    o Applications built on the MxGUI framework can now receive key
+      press events in the OpenGL canvas area by overriding the key_press()
+      method.
+
+
+in Version 0.9
+-----------
+
+    This was the initial preliminary release for Fall 2000.

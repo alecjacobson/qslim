@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: mat.html,v 1.2 2000/09/05 19:43:19 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Matrix Math</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Matrix Math</h2>
+
+<p>The <tt>libgfx</tt> matrix math package is the companion to the 
+<a href="vec.html">vector package</a> and are intended to provide a convenient
+way of writing vector/matrix equations.
+Currently, only square matrices
+of dimension 2x2 [<a href="mat2.html"><tt>Mat2</tt></a>],
+3x3 [<a href="mat3.html"><tt>Mat3</tt></a>],
+and 4x4 [<a href="mat4.html"><tt>Mat4</tt></a>].
+
+<p>A matrix consists of <i>n*n</i> double precision floating point values.
+Unlike the vector package, the matrix package is not yet template-based.
+Matrix elements are accessed using 0-indexed (row, column) pairs.  Thus, a 2x2
+identity matrix can be constructed as follows:
+<pre>
+    Mat2 A;
+
+    A(0, 0) = 1.0;
+    A(0, 1) = 0.0;
+    A(1, 0) = 0.0;
+    A(1, 1) = 1.0;
+</pre>
+The default constructors (as used above) initialize all elements to 0.  All
+matrix classes also provide constructors which accept a list of row vectors to
+initialize their elements.  Thus, the following example is equivalent to the
+code above:
+<pre>
+    Mat2 A(Vec2(1.0, 0.0), Vec2(1.0, 0.0));
+</pre>
+Matrices can also be automatically case to <tt>double</tt> pointers.  Since
+matrices are stored in row-major order, the follow code would change element
+(0, 1) of the matrix above:
+<pre>
+    double *B = A;
+    B[1] = -1.0;
+</pre>
+
+<p><strong>Warning:</strong>
+For efficiency reasons, <em>accessors are not range checked</em>.
+Thus you can legally write
+<pre>
+    Mat2 v;
+    v(-10, 37) = 1.0;
+</pre>
+and generate an invalid memory access.
+
+<h3>Arithmetic Operators</h3>
+
+<p>Like the vector package, one of the primary goals of the matrix package is
+to simplify the writing of vector/matrix equations.
+To accomplish this, it makes use of C++ operator overloading.
+
+<p><strong>Assignment</strong>&nbsp;&nbsp;
+Matrices can be assigned the values of other matrices or scalars.
+A matrix assignment <tt>A = B</tt> copies the elements of <tt>B</tt>
+into the corresponding elements of <tt>A</tt>.  A scalar assignment
+<tt>A = 1.0</tt> copies the given scalar, in this case <tt>1.0</tt>,
+into each of the elements of <tt>A</tt>.
+
+<p><strong>Addition/Subtraction</strong>&nbsp;&nbsp;
+Matrices can be added together either with the binary addition operator (<tt>C
+= A + B</tt>) or the additive assignment operator (<tt>A += B</tt>).
+Subtraction operates similarly, using subtraction rather than addition
+operators.
+
+<p><strong>Scalar Multiplication/Division</strong>&nbsp;&nbsp;
+Matrices can be multiplied by scalar values using either the binary
+operator (<tt>A * 2.0</tt>) or the accumulation operator (<tt>A *=
+2.0</tt>).  Scalar division operates similarly.
+
+<p><strong>Matrix/Vector Multiplication</strong>&nbsp;&nbsp;
+Matrices can be multiplied together with a binary operator (<tt>A *
+B</tt>).  Matrices can also multiply vectors (<tt>A * v</tt>) which returns a
+new vector.
+
+<h3>Standard Matrix Functions</h3>
+
+<p>All matrix classes support a standard set of functions for performing
+common operations on matrices.  The functions are:
+<pre>
+<i>// Constructs the outer product of the two vectors</i>
+Mat_ outer_product(const Vec_ &amp;u, const Vec_ &amp;v);
+
+<i>// Returns the determinant of the matrix</i>
+double det(const Mat_ &amp;A);
+
+<i>// Returns the trace of the matrix (the sum of the diagonals)</i>
+double trace(const Mat_ &amp;A);
+
+<i>// Returns the transpose of A</i>
+Mat_ transpose(const Mat_ &amp;A);
+
+<i>// Returns the adjoint of A</i>
+Mat_ adjoint(const Mat_ &amp;A);
+
+<i>// Places the inverse of A in A_inv and returns det(A)
+// The contents of A_inv are undefined if the inverse doesn't exist.</i>
+double invert(Mat_ &amp;A_inv, const Mat_ &amp;A);
+</pre>
+
+<p>Matrices can also be read from and written to C++ iostreams using the
+standard <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> operators.
+
+</body>
+</html>

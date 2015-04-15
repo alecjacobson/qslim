@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: start.html,v 1.1 2000/07/31 21:40:02 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Getting Started</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Getting Started </h2>
+
+<p>The <tt>libgfx</tt> library can be used for writing both
+console-oriented and GUI programs.  All programs, whether console or
+GUI, should begin by including the standard header:
+<pre>
+    #include &lt;gfx/gfx.h&gt;
+</pre>
+
+<h3>The Standard Header: gfx.h</h3>
+
+<p>The first task of the standard header file is to provide a consist
+code environment.  It begins by including a set of standard C++
+headers <tt>&lt;cstdlib&gt;</tt>, <tt>&lt;cmath&gt;</tt>,
+<tt>&lt;climits&gt;</tt>, and <tt>&lt;iostream&gt;</tt>.
+It then makes sure that various common symbols, such as <tt>bool</tt>,
+<tt>M_PI</tt>, and <tt>HUGE</tt> are defined.
+
+<h4>Numerical Procedures</h4>
+
+<p>Graphics programs typically involve a substantial amount of
+mathematical calculation.  Indeed, much the the <tt>libgfx</tt>
+library is devoted to supporting things such as matrix/vector
+computations.  Certain mathematical procedures are common enough, and
+simple enough, that they are included in the standard header.
+
+<p>First, there are the procedures for generating random numbers:
+<pre>
+    inline double random1();        <i>// Random number between 0 and 1</i>
+    inline char   random_byte();    <i>// Random byte between 0 and 255</i>
+</pre>
+These functions use the internal <tt>random()</tt> procedure if it's
+available, or <tt>rand()</tt> if not.
+
+<p>Next, are procedures for comparing floating point numbers:
+<pre>
+    const double FEQ_EPS = 1e-6;
+    const double FEQ_EPS2 = 1e-12;
+
+    inline bool  FEQ(double a, double b, double eps=FEQ_EPS);
+    inline bool  FEQ2(double a, double b, double eps=FEQ_EPS2);
+</pre>
+The <tt>FEQ()</tt> procedures return <tt>true</tt> if <tt>a</tt> and
+<tt>b</tt> are within <tt>eps</tt> of each other.
+
+<h4>Timing Procedures</h4>
+
+<p>To characterize the performance of a program, it is often useful to
+measure it's running time.  For this reason, <tt>libgfx</tt> provides
+some basic facilities for measuring time.
+
+<pre>
+    extern double get_cpu_time();
+</pre>
+
+The function returns the number of seconds on the CPU clock.  Based on
+the platform you're using, this function may use various system
+services to compute this clock.  Therefore, it does not use a
+consistent measure across all systems; however, the returned quantity
+will usually be the number of seconds since the system was turned on.
+
+<p>A more convenient way to measure running time is to use the
+following macro:
+<pre>
+    #define TIMING(t, cmd) { t=get_cpu_time(); cmd; t=get_cpu_time() - t; }
+</pre>
+Given a procedure <tt>test_proc()</tt> whose performance we want to
+measure, we can use the following code:
+<pre>
+    double running_time;
+
+    TIME(running_time, test_proc());
+
+    cout << "The running time was: " << running_time << " seconds." << endl;
+</pre>
+This will print the running time of <tt>test_proc()</tt> on the console.
+
+
+<h4>Configuration Definitions</h4>
+
+<p>The final task of the standard header is to include the
+<tt>libgfx</tt> configuration header.  This header is generated when
+the library is compiled.  On Unix-like platforms, the header is named
+<tt>&lt;gfx/config.h&gt;</tt> and is generated automatically by the
+configuration script.  For Microsoft Visual Studio platforms, a
+hand-coded header such as <tt>&lt;gfx/config-vc5.h&gt;</tt> is used
+instead.  The symbols defined in this header can be used to detect the
+presence of various language features and external libraries.
+The symbols of interest to external programs are summarized below:
+
+<br><br>
+<table align=center width=85% border=0 cellpadding=5>
+<tr valign=top><th align=left>Symbol</th><th align=left>Defined when ...</th></tr>
+
+<tr valign=top><td><tt>HAVE_LIBTIFF</tt></td>
+<td>library supporting TIFF image I/O is available.</td></tr>
+
+<tr valign=top><td><tt>HAVE_LIBTIFF_LZW</tt></td>
+<td><tt>libtiff</tt> supports patented LZW compression.</td></tr>
+
+<tr valign=top><td><tt>HAVE_LIBPNG</tt></td>
+<td>library supporting PNG image I/O is available.</td></tr>
+
+<tr valign=top><td><tt>HAVE_LIBJPEG</tt></td>
+<td>library supporting JPEG image I/O is available.</td></tr>
+
+<tr valign=top><td><tt>HAVE_OPENGL</tt></td>
+<td>OpenGL is available.  Value is name of implementation
+(e.g., "OpenGL" or "Mesa").</td></tr>
+</table>
+
+<p>These configuration symbols should be tested with <tt>#ifdef</tt>
+directives, as in the following example:
+<pre>
+    #ifdef HAVE_LIBTIFF
+    generate_tiff_output();
+    #endif
+</pre>
+
+</body>
+
+</html>

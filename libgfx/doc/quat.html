@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: quat.html,v 1.4 2002/03/11 21:16:57 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Quaternions</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Quaternions</h2>
+
+<p>This package provides the basic mathematical tools necessary for
+manipulating quaternions.  To begin using it, you must first include the
+header file:
+<pre>
+    #include &lt;gfx/quat.h&gt;
+</pre>
+
+<p>For more information on the definition of quaternions and their
+associated mathematics, you might try the informative Web pages provided
+by
+<a href="http://mathworld.wolfram.com/Quaternion.html">MathWorld</a>,
+<a href="http://www.magic-software.com/Documentation/quat.pdf">David
+    Eberly</a>, or
+<a
+    href="http://graphics.cs.ucdavis.edu/GraphicsNotes/Quaternions.pdf">UC
+    Davis</a>.
+
+<h3>class Quat</h3>
+
+<p>The interface presented by the <tt>Quat</tt> class treats quaternions
+as consisting of a real scalar part and a complex 3-vector part.
+
+<h4>Constructor Methods</h4>
+
+<p>The <tt>Quat</tt> class defines the following set of constructors:
+
+<pre>
+    Quat();                                        <i>// Initializes to identity quaternion</i>
+    Quat(double x, double y, double z, double w);  <i>// Specify vector &amp; scalar part.</i>
+    Quat(const Vec3&amp; a, double b);                 <i>// Specify vector &amp; scalar part.</i>
+    Quat(const Quat&amp; q);                           <i>// Copy values from q</i>
+</pre>
+
+<pre>
+    Quat::ident();                                 <i>// Return the identity quaternion</i>
+</pre>
+
+<h4>Arithmetic Methods</h4>
+
+<p>The quaternion class supports all the usual arithmetic methods, both
+as in-place assignment operators:
+
+<pre>
+    Quat&amp; operator=(const Quat&amp; q);
+    Quat&amp; operator+=(const Quat&amp; q);
+    Quat&amp; operator-=(const Quat&amp; q);
+    Quat&amp; operator=(double d);
+    Quat&amp; operator*=(double d);
+    Quat&amp; operator/=(double d);
+</pre>
+
+and as normal binary operations:
+
+<pre>
+    Quat operator+(const Quat&amp; q, const Quat&amp; r);
+    Quat operator*(const Quat&amp; q, const Quat&amp; r);
+    Quat operator*(const Quat&amp; q, double s);
+    Quat operator*(double s, const Quat&amp; q);
+    Quat operator/(const Quat&amp; q, double s);
+</pre>
+
+<h4>Quaternion Operations</h4>
+
+<p>Using the fundamental arithmetic operations defined above, this
+package also provides the following operations on quaternions:
+<pre>
+    double norm(const Quat&amp; q);     <i>// Return the length of q</i>
+    Quat conjugate(const Quat&amp; q);  <i>// Return conjugate of q</i>
+    Quat inverse(const Quat&amp; q);    <i>// Return multiplicative inverse of q</i>
+    void unitize(Quat&amp; q);          <i>// Convert to unit quaternion</i>
+    Quat exp(const Quat&amp; q);        <i>// Exponential of a <b>unit</b> quaternion </i>
+    Quat log(const Quat&amp; q);        <i>// Natural logarithm of a <b>unit</b> quaternion </i>
+</pre>
+
+<p>Quaternions can be constructed from an axis/angle rotation
+specification using the function:
+<pre>
+    Quat axis_to_quat(const Vec3&amp; a, double phi);
+</pre>
+At is also generally useful to be able to convert a quaternion into a
+rotation matrix:
+<pre>
+    Mat4 quat_to_matrix(const Quat&amp; q);
+    Mat4 unit_quat_to_matrix(const Quat&amp; q);
+</pre>
+
+<p>
+<pre>
+    Quat slerp(const Quat&amp; from, const Quat&amp; to, double t);
+</pre>
+
+<p>Quaternions can also be read from and written to C++ iostreams using the
+standard <tt>&lt;&lt;</tt> and <tt>&gt;&gt;</tt> operators.
+
+</body>
+
+</html>

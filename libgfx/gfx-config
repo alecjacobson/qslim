@@ -1,0 +1,38 @@
+# $Id: gfx-config.in,v 1.9 2002/06/13 18:34:59 garland Exp $
+
+CC = gcc
+CXX = g++
+RANLIB = ranlib
+RM = /bin/rm
+FLTKCONFIG = fltk-config
+
+WIN_FLAGS = 
+WIN_LFLAGS = 
+CFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Dropbox/qslim-2.1/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+CXXFLAGS = -g -O2 -I/opt/local/include -fpermissive -I/Users/ajx/Dropbox/qslim-2.1/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+LDFLAGS = -L/opt/local/lib -L/Users/ajx/Dropbox/qslim-2.1/libgfx/src $(WIN_LFLAGS)
+
+WIN_LIBS  =  -framework Carbon -framework ApplicationServices 
+WIN_DLIBS  =  -framework Carbon -framework ApplicationServices 
+IMG_LIBS =  -lz -ljpeg -ltiff -lpng
+GL_LIBS = -framework AGL -framework OpenGL
+FLTK_LIBS = -lfltk_gl -lfltk
+GUI_LIBS = $(FLTK_LIBS) $(IMG_LIBS) $(GL_LIBS) $(WIN_LIBS)
+
+CC_DEPEND = $(CC) -M $(CFLAGS)
+CXX_DEPEND = $(CXX) -M $(CXXFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .fl .c .cc .cxx .o
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $<
+
+.fl.cxx:
+	fluid -c $<
+
+.fl.h:
+	fluid -c $<

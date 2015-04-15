@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+		      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!-- $Id: script.html,v 1.6 2001/10/10 00:38:28 garland Exp $ -->
+
+<html>
+
+<head>
+<title>libgfx: Simple File Format Scripting</title>
+<link rel=stylesheet href="cdoc.css" type="text/css">
+<meta name="Author" content="Michael Garland">
+</head>
+
+<body>
+
+<h2>Simple File Format Scripting</h2>
+
+<p>The <tt>libgfx</tt> library provides a very simple scripting facility which
+is primarily intended to support parsing of input files and control scripts.
+To use this package, you must include the header file:
+<pre>
+    #include &lt;gfx/script.h&gt;
+</pre>
+
+<p>For more information about this package, you may want to examine the
+sample <a href="ex-script.html">scripted application</a>.
+
+<h3>File Structure</h3>
+
+<p>Scripts processed by this package are assumed to be composed of a sequence
+of lines.  Each line is processed separately, in sequence, and falls into one
+of the following categories:
+<ol>
+<li>Lines containing only whitespace are ignored
+<li>Lines whose first non-whitespace character is a '#' (hash mark) are
+treated as comments and are ignored
+<li>All other lines are assumed to be a sequence of whitespace-separated
+tokens where the first token is a command name and subsequent tokens are
+arguments to this command.
+</ol>
+
+<h3>Processing Scripts</h3>
+
+<p>In order to process scripts, you must (at minimum) perform the following
+steps:
+<ol>
+<li>Instantiate a <i>scripting environment</i> of type <tt>CmdEnv</tt>.
+<li>Register your command(s) with <tt>CmdEnv::register_command()</tt>
+or <tt>CmdEnv::register_method()</tt>.
+<li>Feed the text of the script to the parsing system.
+</ol>
+The specifics of these steps are detailed in the following sections.
+
+<h4>The Scripting Environment</h4>
+
+<p>The primary task of the scripting system is to map command name tokens into
+command procedures.  These procedures, also referred to as "handlers", are
+responsible for actually performing the computation associated with a
+particular command.
+Handlers should conform to the following type definition:
+<pre>
+    typedef int (*CmdHandler)(const CmdLine &amp;cmd);
+</pre>
+The <tt>CmdLine</tt> type manages the text of a particular command line, and
+provides various methods for parsing that information (see details below).
+
+<p>The <tt>CmdEnv</tt> class manages the mapping of command names to
+handlers.  In particular, handler names are mapped to pointers to
+objects derived from the base class <tt>CmdObject</tt>.  All derived
+classes of <tt>CmdObject</tt> are required to override the
+<tt>operator()</tt> invocation virtual method.  By using this virtual
+function, handler objects are allowed to encapsulate arbitrary data in
+their definition (i.e., to create closures).  The standard scripting
+framework defines two kinds of <tt>CmdObject</tt> handlers: (1) the
+<tt>CmdFunction</tt> class to encapsulate normal functions and static
+methods and (2) and the <tt>CmdMethod</tt> template class to
+encapsulate member functions.
+
+
+<p>New handler procedures (non-member functions)
+can be associated with names using
+the method:
+<pre>
+    void register_command(const std::string&amp; name, CmdHandler proc);
+</pre>
+Member functions can be bound to names uses the templated member
+function:
+<pre>
+    template&lt;class T&gt;
+    void register_method(const std::string& name,
+                         T *obj,
+                         int (T::*fn)(const CmdLine&));
+</pre>
+Note that in both cases, prior bindings of <tt>name</tt> associated
+with another handler will be overwritten.
+Existing handlers can be located by name
+using the method:
+<pre>
+    CmdObject *lookup_command(const std::string&amp; name);
+</pre>
+which returns <tt>NULL</tt> if no handler is bound to the given name.
+
+<h4>Submitting Text for Execution</h4>
+
+<p>Several procedures are available for submitting script text to the parsing
+system.  All of them require a <tt>CmdEnv</tt> argument that will determine
+the mapping of command names to handlers.
+
+<p>The underlying method for parsing text is:
+<pre>
+    int script_do_line(std::string &amp;line, CmdEnv &amp;env);
+    int script_do_line(const char *line, CmdEnv &amp;env);
+</pre>
+It assumes that its input is a string consisting of a single line &mdash; any
+embedded newlines will be treated like any other whitespace.
+It will
+split this line it a series of whitespace-separated tokens, interpreting the
+first such token as a command name.  If <tt>env</tt> provides a binding for
+this name, the appropriate handler will be called.
+
+<p>For convenience, the scripting package also provides the following methods:
+<pre>
+    int script_do_stream(std::istream &amp;in, CmdEnv &amp;env);
+    int script_do_file(const char *name, CmdEnv &amp;env);
+    int script_do_string(const char *str, CmdEnv &amp;env);
+</pre>
+They operate by extracting a single line from the input source and processing
+that line with <tt>script_do_line()</tt>.  They repeat this line-by-line
+process until the file/stream/string has been exhausted.
+The first time the processing of a line fails with an error code, these
+procedures return this error code immediately without completing the
+processing of the rest of the input.
+
+
+<h3>Writing Command Handlers</h3>
+
+<p>A command procedure is declared as follows:
+<pre>
+    int proc(const CmdLine&amp; cmd);
+</pre>
+The <tt>CmdLine</tt> structure contains all the necessary data about the line
+being processed.  It provides the following fundamental accessors:
+<pre>
+    class CmdLine
+    {
+    public:
+	const std::string &amp;line;        // Raw text of the (complete) line
+	std::string opname() const;     // Name of the command being invoked
+	std::string argline() const;    // Argument string
+	int argcount() const;           // Number of argument tokens
+    };
+</pre>
+The argument string returned by <tt>argline()</tt> is unparsed except that
+whitespace following the command name and trailing whitespace at the end of
+the line have been removed.
+
+
+<p>It is up to the handler to parse the command line in whatever way it likes.
+However, the scripting system assumes that command will be given
+whitespace-separated token lists.  Therefore, it pre-computes the indices of
+these tokens in the command line text before invoking the handler.  To access
+an individual token, you can use the <tt>CmdLine</tt> methods:
+<pre>
+    std::string token_to_string(int i) const;
+    double token_to_double(int i) const;
+    float token_to_float(int i) const;
+    int token_to_int(int i) const;
+</pre>
+Tokens are numbered from <tt>[0 .. argcount()-1]</tt>.  Note that, for
+efficiency, these methods <em>do not perform range checking.</em>  It is up to
+the caller to verify that the given indices are valid.
+
+<p>In addition to accessing single argument tokens, you can collect all
+argument tokens into lists with the following <tt>CmdLine</tt> methods:
+<pre>
+    int collect_as_strings(std::vector&lt;std::string&gt; &amp;v) const;
+    int collect_as_numbers(std::vector&lt;double&gt; &amp;v) const;
+    int collect_as_numbers(std::vector&lt;int&gt; &amp;v) const;
+
+    int collect_as_numbers(double *v, int size) const;
+    int collect_as_numbers(float *v, int size) const;
+    int collect_as_numbers(int *v, int size) const;
+</pre>
+These methods always return the number of tokens collected.
+The <tt>vector</tt>-based methods will always collect all available tokens.
+In contrast, those which accept raw arrays will either collect <tt>size</tt>
+or <tt>argcount()</tt> tokens, whichever is smaller.
+
+<p>See the accompanying <a href="ex-script.html">scripting example</a> for more
+details on how to write command handlers.
+
+</body>
+</html>
