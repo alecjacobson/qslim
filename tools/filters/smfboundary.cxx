@@ -76,7 +76,7 @@ void output_boundary_verts(MxStdModel *m, ostream& out)
     }
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv, options, process_options);
     if( !m ) return 0;

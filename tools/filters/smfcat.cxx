@@ -15,7 +15,7 @@
 #include <stdmix.h>
 #include "cmdline.h"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
     if( !m ) return 0;

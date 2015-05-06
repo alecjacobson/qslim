@@ -79,7 +79,7 @@ void RefineFilter::add_noise(float scale)
     }
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv, options, process_options);
     if( !m ) return 0;

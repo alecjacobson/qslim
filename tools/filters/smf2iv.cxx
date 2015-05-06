@@ -44,7 +44,7 @@ void output_iv(MxStdModel *m)
     cout << "]}}" << endl;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
     if( !m ) return 0;

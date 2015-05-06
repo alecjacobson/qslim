@@ -96,7 +96,7 @@ MxStdModel *create_sphere_base()
     return m;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     process_cmdline_only(argc, argv, options, process_options);
     MxStdModel *m = create_sphere_base();

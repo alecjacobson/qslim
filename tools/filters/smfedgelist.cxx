@@ -113,7 +113,7 @@ void process_options(int opt, char *optarg)
 
 
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv, options, process_options);
 

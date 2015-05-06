@@ -77,7 +77,7 @@ void output_c(MxStdModel *m, ostream& out)
     out << "glEnd();" << endl;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
     if( !m ) return 1;

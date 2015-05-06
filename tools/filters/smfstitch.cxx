@@ -98,7 +98,7 @@ void exhaustive_search(MxStdModel *m)
 	}
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv, options, process_options);
     if( !m ) return 0;

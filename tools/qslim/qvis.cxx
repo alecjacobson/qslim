@@ -228,7 +228,7 @@ void GUI::draw_custom_contents(MxStdModel *m)
 // Main application routine
 //
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     // Change default values for application variables in GUI version
     will_record_history = true;

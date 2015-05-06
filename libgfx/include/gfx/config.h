@@ -17,10 +17,10 @@
 /* #undef HAVE_RANDOM */
 
 /* Define if the STL hash_map template is available */
-#define HAVE_HASH_MAP 1
+/* #undef HAVE_HASH_MAP */
 
 /* Define if the STL hash_set template is available */
-#define HAVE_HASH_SET 1
+/* #undef HAVE_HASH_SET */
 
 /* GCC v3 puts hash_map and hash_set in an 'ext' directory */
 #define HAVE_EXT_HASH_MAP 1
@@ -44,7 +44,7 @@
 #define HAVE_FLTK_GL 1
 
 /* Define if Sam Leffler's libtiff is available */
-#define HAVE_LIBTIFF 1
+/* #undef HAVE_LIBTIFF */
 
 /* Define the libtiff LZW is available */
 /* #undef HAVE_LIBTIFF_LZW */
@@ -67,10 +67,10 @@
 #define HAVE_POLYOFFSET 1
 
 /* Define if <GL/glext.h> header is available */
-#define HAVE_GL_GLEXT_H 1
+/* #undef HAVE_GL_GLEXT_H */
 
 /* Define if <GL/glxext.h> header is available */
-#define HAVE_GL_GLXEXT_H 1
+/* #undef HAVE_GL_GLXEXT_H */
 
 /* Define if <GL/wglext.h> header is available */
-#define HAVE_GL_WGLEXT_H 1
+/* #undef HAVE_GL_WGLEXT_H */

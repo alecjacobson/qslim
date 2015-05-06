@@ -52,7 +52,7 @@ void clean(MxStdModel *m)
 }
 
 #ifndef FILTER_PROCEDURE
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
 

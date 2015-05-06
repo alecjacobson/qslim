@@ -148,7 +148,7 @@ void report(MxStdModel *m0, MxStdModel *m1)
 }
 
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     process_cmdline_only(argc, argv, options, process_options);
 

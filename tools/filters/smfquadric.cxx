@@ -43,7 +43,7 @@ void process_options(int opt, char *optarg)
     {
     case 'x':  k1 = atof(optarg); break;
     case 'y':  k2 = atof(optarg); break;
-    case 't':  extent = atof(optarg); break;
+    case 't':  ::extent = atof(optarg); break;
     case 'r':  ring_count = atoi(optarg); break;
     case 'n':  N = atoi(optarg); break;
     case 'f':  focus_out = !focus_out; break;
@@ -80,7 +80,7 @@ MxStdModel *generate_quadric()
 
     // Set up the variables we need to keep track of where we are
     uint base_vertex = 1;
-    float R = extent/ring_count;
+    float R = ::extent/ring_count;
 
     if( k1<0 && k2<0 ) focus_out = !focus_out;
 
@@ -103,7 +103,7 @@ MxStdModel *generate_quadric()
     // Output all subsequent loops
     for(i=1; i<ring_count; i++)
     {
-	R += extent/ring_count;
+	R += ::extent/ring_count;
 	base_vertex += N;
 
 	// Output new vertices
@@ -130,7 +130,7 @@ MxStdModel *generate_quadric()
     return m;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     process_cmdline_only(argc, argv, options, process_options);
 

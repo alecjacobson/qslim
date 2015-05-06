@@ -32,7 +32,7 @@ void output_flat(MxStdModel *m)
 	cout << m->face(j) << endl;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
     if( !m ) return 0;

@@ -95,7 +95,7 @@ void report_measurements(MxStdModel *m)
     cout << "max edge = " << max_edge << endl;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     MxStdModel *m = process_cmdline(argc, argv);
     if( !m ) return 0;

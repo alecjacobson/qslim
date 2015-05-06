@@ -32,7 +32,7 @@ void startup_and_input(int argc, char **argv)
     output_preamble();
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     double input_time, init_time, slim_time, output_time;
 

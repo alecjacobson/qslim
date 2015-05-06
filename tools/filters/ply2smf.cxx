@@ -178,7 +178,7 @@ void write_file()
 Main program.
 ******************************************************************************/
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   read_file();
   write_file();

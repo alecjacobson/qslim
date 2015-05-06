@@ -7,7 +7,9 @@ to compile on mac os x.
 
 ## Compilation
 
-You must first install `fltk` (e.g. using macports/homebrew).
+You must first install `fltk` (e.g. using macports/homebrew). Otherwise you'll
+only be able to build the command line version (in that case replace the last
+`make` with `make qslim`)
 
 ```bash
 cd libgfx
@@ -16,7 +18,7 @@ make -C src
 cd ../mixkit
 ./configure
 make -C src
-cd ../filters
+cd ../tools/filters
 make
 cd ../tools/qslim
 make
