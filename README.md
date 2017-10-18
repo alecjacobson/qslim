@@ -13,14 +13,14 @@ only be able to build the command line version (in that case replace the last
 
 ```bash
 cd libgfx
-env CPPFLAGS="-I/opt/local/include -fpermissive" LDFLAGS="-L/opt/local/lib" ./configure
+env CPPFLAGS="-I/usr/local/include -fpermissive" LDFLAGS="-L/usr/local/lib" ./configure
 make -C src
 cd ../mixkit
 ./configure
 make -C src
 cd ../tools/filters
 make
-cd ../tools/qslim
+cd ../qslim
 make
 ```
 
