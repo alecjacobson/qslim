@@ -60,4 +60,7 @@ tools/filters/smfsphere
 tools/filters/smfstitch
 tools/qslim/qslim
 tools/qslim/qvis
-
+libgfx/config.status
+libgfx/gfx-config
+mixkit/config.log
+mixkit/mix-config
